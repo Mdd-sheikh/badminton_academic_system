@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
+import Hero from "../../../cards/herosction/Hero";
 
 /*
  * SmashPoint Academy — Home page
@@ -281,98 +282,9 @@ export default function Home() {
     return (
         <main className="sp-home">
             {/* HERO: primary message and first conversion actions */}
-            <section className="sp-hero" aria-labelledby="sp-hero-title">
-                <div className="sp-container sp-hero__grid">
-                    <div className="sp-hero__content">
-                        <p className="sp-live-label">
-                            <span className="sp-live-dot" aria-hidden="true" />
-                            TRAIN SMARTER. COMPETE STRONGER.
-                        </p>
-                        <p className="eyebrow">SMASHPOINT ACADEMY</p>
-                        <h1 id="sp-hero-title">
-                            Forge Championship Precision at <span>SmashPoint</span>
-                        </h1>
-                        <p className="sp-hero__lead">
-                            Olympic-standard court methodology, data-informed coaching, and
-                            next-generation athlete development—all in one place.
-                        </p>
-                        <div className="sp-hero__actions">
-                            <a className="sp-button sp-button--primary" href="#trial">
-                                Join the Academy <span aria-hidden="true">↗</span>
-                            </a>
-                            <a className="sp-button sp-button--ghost" href="#features">
-                                <span className="sp-play-icon" aria-hidden="true">▶</span>
-                                Explore the Academy
-                            </a>
-                        </div>
-                        <div className="sp-hero__trust">
-                            <div className="sp-avatar-stack" aria-hidden="true">
-                                <span>MC</span><span>SL</span><span>RK</span>
-                            </div>
-                            <p><strong>Player-first coaching</strong><br />Built around measurable progress</p>
-                        </div>
-                    </div>
-
-                    {/* Replace this illustrative panel with live dashboard data if available. */}
-                    <aside className="sp-performance-card" aria-label="Sample performance dashboard">
-                        <div className="sp-performance-card__top">
-                            <div>
-                                <p className="sp-card-kicker">COURT TELEMETRY ACTIVE</p>
-                                <h2>Performance Snapshot</h2>
-                            </div>
-                            <span className="sp-live-pill"><span /> LIVE DEMO</span>
-                        </div>
-                        <div className="sp-speed-panel">
-                            <div>
-                                <p className="sp-muted-label">SHUTTLE SPEED</p>
-                                <p className="sp-speed">412 <span>km/h</span></p>
-                                <p className="sp-card-note">↗ Sample performance metric</p>
-                            </div>
-                            <div className="sp-speed-ring" aria-label="Performance score 84 percent">
-                                <span>84</span><small>%</small>
-                            </div>
-                        </div>
-                        <div className="sp-dashboard-grid">
-                            <div>
-                                <span className="sp-muted-label">FOOTWORK EFFICIENCY</span>
-                                <strong>94.2%</strong>
-                                <small>Training benchmark</small>
-                            </div>
-                            <div>
-                                <span className="sp-muted-label">REACTION TIME</span>
-                                <strong>0.42 <small>sec</small></strong>
-                                <small>Sample result</small>
-                            </div>
-                        </div>
-                        <div className="sp-chart" aria-label="Illustrative performance trend">
-                            <div className="sp-chart__labels"><span>SESSION 01</span><span>SESSION 06</span><span>SESSION 12</span></div>
-                            <svg viewBox="0 0 420 80" role="img" aria-label="Illustrative rising performance line">
-                                <defs>
-                                    <linearGradient id="spChartFill" x1="0" x2="0" y1="0" y2="1">
-                                        <stop offset="0%" stopColor="#27d982" stopOpacity=".28" />
-                                        <stop offset="100%" stopColor="#27d982" stopOpacity="0" />
-                                    </linearGradient>
-                                </defs>
-                                <path d="M0 65 C28 60 35 49 60 53 S100 38 126 45 S164 25 190 35 S230 20 255 28 S295 10 320 20 S370 8 420 4 L420 80 L0 80 Z" fill="url(#spChartFill)" />
-                                <path d="M0 65 C28 60 35 49 60 53 S100 38 126 45 S164 25 190 35 S230 20 255 28 S295 10 320 20 S370 8 420 4" fill="none" stroke="#27d982" strokeWidth="2.5" strokeLinecap="round" />
-                            </svg>
-                        </div>
-                        <p className="sp-demo-note">Illustrative dashboard — connect real athlete data through your backend.</p>
-                    </aside>
-                </div>
-            </section>
-
+           
+       <Hero/>
             {/* TRUST / METRICS: replace sample values with verified academy statistics. */}
-            <section className="sp-stats" aria-label="Academy highlights">
-                <div className="sp-container sp-stats__grid">
-                    {academyStats.map((stat) => (
-                        <div className="sp-stat" key={stat.label}>
-                            <strong>{stat.value}</strong>
-                            <span>{stat.label}</span>
-                        </div>
-                    ))}
-                </div>
-            </section>
 
             {/* AUDIENCES: separate value propositions for players, parents, and coaches. */}
             <section className="sp-section sp-section--surface" id="programs">

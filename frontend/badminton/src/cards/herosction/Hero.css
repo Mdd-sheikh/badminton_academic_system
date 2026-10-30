@@ -1,0 +1,274 @@
+/*
+ * SmashPoint Academy — Hero styles
+ * ---------------------------------------------------------
+ * Uses the same --sp-* and --sp-page-* tokens as Home.css, so import Hero
+ * inside the .sp-home wrapper (Home.jsx already does this).
+ * All classes start with "sph-" so nothing clashes with the old hero rules.
+ */
+
+.sph-hero {
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(48px, 7vw, 96px) 0;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(39, 217, 130, 0.09), transparent 42%),
+    linear-gradient(180deg, #101411 0%, #111914 100%);
+}
+
+:root[data-theme="light"] .sph-hero {
+  background: linear-gradient(180deg, #f7faf8 0%, #eef4f0 100%);
+}
+
+.sph-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+/* ---------- Left column ---------- */
+.sph-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 22px;
+  padding: 7px 13px;
+  border: 1px solid rgba(39, 217, 130, 0.25);
+  border-radius: 999px;
+  background: var(--sp-primary-soft);
+  color: var(--sp-primary-light);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+:root[data-theme="light"] .sph-notice {
+  color: #0e7a45;
+}
+
+.sph-notice__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sp-primary);
+}
+
+.sph-copy h1 {
+  max-width: 600px;
+  margin: 0;
+  font-size: clamp(2.4rem, 4.8vw, 4.1rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1.04;
+}
+
+.sph-lead {
+  max-width: 520px;
+  margin: 22px 0 0;
+  color: var(--sp-page-muted);
+  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  line-height: 1.75;
+}
+
+.sph-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.sph-signin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 34px;
+  padding-top: 22px;
+  border-top: 1px solid var(--sp-page-border);
+}
+
+.sph-signin p {
+  margin: 0;
+  color: var(--sp-page-muted);
+  font-size: 0.86rem;
+}
+
+.sph-signin__links {
+  display: flex;
+  gap: 8px;
+}
+
+.sph-signin__links a {
+  padding: 6px 13px;
+  border: 1px solid var(--sp-page-border);
+  border-radius: 999px;
+  background: var(--sp-page-card);
+  color: var(--sp-page-text);
+  font-size: 0.82rem;
+  font-weight: 650;
+  transition: border-color var(--sp-transition), color var(--sp-transition);
+}
+
+.sph-signin__links a:hover {
+  border-color: rgba(39, 217, 130, 0.55);
+  color: var(--sp-primary);
+}
+
+/* ---------- Image with live badge ---------- */
+.sph-feed {
+  position: relative;
+  height: clamp(280px, 36vw, 460px);
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--sp-page-border);
+  border-radius: var(--sp-radius-xl);
+  background: #202b24;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+}
+
+.sph-feed img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dark gradient so the text on the photo stays readable */
+.sph-feed::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 12, 10, 0.45) 0%, transparent 35%, rgba(8, 12, 10, 0.8) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.sph-feed__badge,
+.sph-feed__caption {
+  position: absolute;
+  z-index: 1;
+  color: #f3f8f4;
+}
+
+.sph-feed__badge {
+  top: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 10px;
+  border-radius: 6px;
+  background: rgba(8, 12, 10, 0.72);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(6px);
+}
+
+.sph-feed__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  animation: sph-blink 1.2s steps(1, end) infinite, sph-ring 1.2s ease-out infinite;
+}
+
+.sph-feed__caption {
+  bottom: 18px;
+  left: 20px;
+  display: grid;
+  gap: 2px;
+}
+
+.sph-feed__caption strong {
+  font-size: 1.05rem;
+}
+
+.sph-feed__caption span {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+@keyframes sph-blink {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0.15; }
+}
+
+@keyframes sph-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.55); }
+  100% { box-shadow: 0 0 0 9px rgba(255, 77, 77, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sph-feed__dot {
+    animation: none;
+  }
+}
+
+/* ---------- Academy info strip ---------- */
+.sph-info {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: clamp(44px, 6vw, 72px) 0 0;
+  border-top: 1px solid var(--sp-page-border);
+}
+
+.sph-info > div {
+  padding: 22px 20px 26px 0;
+}
+
+.sph-info > div + div {
+  padding-left: 20px;
+  border-left: 1px solid var(--sp-page-border);
+}
+
+.sph-info dt {
+  color: var(--sp-page-muted);
+  font-size: 0.74rem;
+}
+
+.sph-info dd {
+  margin: 4px 0 0;
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .sph-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sph-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sph-info > div:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .sph-info > div:nth-child(n + 3) {
+    border-top: 1px solid var(--sp-page-border);
+  }
+}
+
+@media (max-width: 700px) {
+  .sph-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sph-info {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sph-info > div,
+  .sph-info > div + div {
+    padding: 16px 0;
+    border-left: 0;
+  }
+
+  .sph-info > div + div {
+    border-top: 1px solid var(--sp-page-border);
+  }
+}
