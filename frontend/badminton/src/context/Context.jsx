@@ -1,15 +1,21 @@
 import { createContext } from "react"
 
-const Context = createContext(null)
+export const Context = createContext(null)
 
 const ContextProvider = ({ children }) => {
-    const user = JSON.parse(localStorage.getItem("user"))
+    const users = [
+        { name: "aadil", role: "coach", password: "aadil", email: "aadil@example.com" },
+        { name: "sahil", role: "parent", password: "sahil", email: "sahil@example.com" },
+        { name: "shubham", role: "player", password: "shubham", email: "shubham@example.com" }
+    ]
+
     const value = {
-        name
+        users
+
     }
 
     return <Context.Provider value={value}>
-       {children}
+        {children}
     </Context.Provider>
 }
 export default ContextProvider;

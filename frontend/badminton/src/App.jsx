@@ -7,6 +7,7 @@ import { PublicLayout } from './Routes/PublicRoute';
 import PrivateRoute from './Routes/PrivateRoute';
 import Home from './pages/landing/home/Home';
 import Auth from './auth/Authentication/Auth';
+import Logout from './auth/Authentication/Logout';
 
 // Coach
 import DashboardC from './pages/coaches_page/dashboard/DashboardC';
@@ -69,8 +70,8 @@ function App() {
         <Route path="/auth" element={<Navigate to="/login" replace />} />
 
         {/* Coach area: login required, then the dashboard layout */}
-        { /*<Route element={<PrivateRoute allowedRoles={["coach"]} redirectTo="/login" />}>*/}
-        <Route>
+        <Route element={<PrivateRoute allowedRoles={["coach"]} redirectTo="/login" />}>
+          { /*<Route>*/}
           <Route element={<DashboardC />}>
             <Route path="/coach/dashboard" element={<CoachHome />} />
             <Route path="/coach/players" element={<Players />} />
@@ -83,6 +84,7 @@ function App() {
             <Route path="/coach/announcements" element={<Announcements />} />
             <Route path="/coach/notifications" element={<Notifications />} />
             <Route path="/coach/settings" element={<Settings />} />
+            <Route path="/logout" element={<Logout />} />
           </Route>
         </Route>
 
@@ -101,8 +103,9 @@ function App() {
         </Route>*/}
 
         {/* Player area: login required, then the player dashboard layout */}
-        { /*<Route element={<PrivateRoute allowedRoles={["player"]} redirectTo="/login" />}>*/}
-        <Route>
+        {/* Parent logins are saved as role "player", so they use this area too */}
+        <Route element={<PrivateRoute allowedRoles={["player"]} redirectTo="/login" />}>
+          { /*<Route>*/}
           <Route element={<DashboardPl />}>
             <Route path="/player/dashboard" element={<PlayerHome />} />
             <Route path="/player/performance" element={<PlayerPerformance />} />
@@ -114,6 +117,7 @@ function App() {
             <Route path="/player/tournaments" element={<PlayerTournaments />} />
             <Route path="/player/notifications" element={<PlayerNotifications />} />
             <Route path="/player/settings" element={<PlayerSettings />} />
+            <Route path="/logout" element={<Logout />} />
           </Route>
         </Route>
       </Routes>

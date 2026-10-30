@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
     Link,
     useLocation,
@@ -26,6 +26,8 @@ import {
     FiLink,
 } from "react-icons/fi";
 import "./Auth.css";
+// DEMO AUTH: adjust this path to where your ContextProvider file lives
+import {Context} from "../../context/Context";
 
 const API_URL = (
     import.meta.env.VITE_API_URL || "http://localhost:5000/api"
@@ -267,6 +269,9 @@ export default function Auth() {
     const otpRefs = useRef([]);
     const redirectTimer = useRef(null);
 
+    // DEMO AUTH: dummy users come from Context
+    const { users } = useContext(Context);
+
     // FIX: normalise the path (trailing slash / case) and treat /auth as /login,
     // otherwise any path that is not an exact key shows "Page not found".
     const rawPath = location.pathname.replace(/\/+$/, "").toLowerCase() || "/";
@@ -397,6 +402,8 @@ export default function Auth() {
         setErrors({});
     };
 
+    // DEMO AUTH: login checks the dummy users from Context (no backend call).
+    // Coach card -> /coach/dashboard. Parent and Player cards -> /player/dashboard.
     const handleLogin = async (event) => {
         event.preventDefault();
         setBanner("");
@@ -416,56 +423,48 @@ export default function Auth() {
         setLoading(true);
 
         try {
-            const { data } = await api.post("/auth/login", {
-                email: values.email,
-                password: values.password,
-                role,
-                rememberMe: form.rememberMe,
-            });
+            const found = users.find(
+                (u) =>
+                    u.email.toLowerCase() === values.email.toLowerCase() &&
+                    u.password === values.password
+            );
 
-            const user = data.user;
-            const token = data.token;
-
-            if (!user || !DASHBOARDS[user.role]) {
-                setBanner("The server returned an invalid account or role.");
-                return;
+            if (!found) {
+                throw new Error("Invalid email or password.");
             }
 
-            if (user.role !== role) {
+            // Parent and player are treated as one group; coach is separate.
+            const selectedCoach = role === "coach";
+            const accountIsCoach = found.role === "coach";
+
+            if (selectedCoach !== accountIsCoach) {
                 setBanner(
-                    `This account is registered as ${user.role}. Choose the correct account type.`
+                    `This account is registered as ${found.role}. Choose the correct account type.`
                 );
                 return;
             }
 
+            // Parent is stored as "player" so both open the same dashboard
+            // and pass the same route guard.
+            const user = {
+                name: found.name,
+                email: found.email,
+                role: accountIsCoach ? "coach" : "player",
+                enrollmentCompleted: true,
+                hasLinkedChild: true,
+            };
+
             setAttemptsRemaining(3);
 
-            if (token) {
-                localStorage.setItem("token", token);
-            }
-
+            localStorage.setItem("token", "demo-token");
             localStorage.setItem("user", JSON.stringify(user));
 
             toast.success("Welcome back!");
 
-            if (
-                user.role === "coach" &&
-                user.approvalStatus === "pending"
-            ) {
-                navigate("/coach/pending-approval", { replace: true });
-            } else if (
-                user.role === "player" &&
-                !user.enrollmentCompleted
-            ) {
-                navigate("/register", { replace: true });
-            } else if (
-                user.role === "parent" &&
-                !user.hasLinkedChild
-            ) {
-                navigate("/parent/link-child", { replace: true });
-            } else {
-                navigate(DASHBOARDS[user.role], { replace: true });
-            }
+            navigate(
+                accountIsCoach ? "/coach/dashboard" : "/player/dashboard",
+                { replace: true }
+            );
         } catch (error) {
             // FIX: no side effects inside a state-updater function
             // (they run twice in React StrictMode).
@@ -762,19 +761,20 @@ export default function Auth() {
         }
     };
 
+    // DEMO AUTH: fills credentials that match the dummy users in Context
     const fillDemo = () => {
         const demos = {
             player: {
-                email: "player@smashpoint.demo",
-                password: "Player@123",
+                email: "shubham@example.com",
+                password: "shubham",
             },
             parent: {
-                email: "parent@smashpoint.demo",
-                password: "Parent@123",
+                email: "sahil@example.com",
+                password: "sahil",
             },
             coach: {
-                email: "coach@smashpoint.demo",
-                password: "Coach@123",
+                email: "aadil@example.com",
+                password: "aadil",
             },
         };
 
@@ -789,7 +789,7 @@ export default function Auth() {
         setDemoMode(true);
         setErrors({});
         setBanner(
-            "Demo credentials filled. These accounts must exist on your backend to log in."
+            "Demo credentials filled. Click Sign in to continue."
         );
     };
 
@@ -1263,8 +1263,7 @@ export default function Auth() {
                                     </div>
                                     {demoMode && (
                                         <small>
-                                            Demo credentials are only useful if matching accounts
-                                            exist in your backend database.
+                                            Demo credentials are filled from the built-in demo users.
                                         </small>
                                     )}
                                 </div>

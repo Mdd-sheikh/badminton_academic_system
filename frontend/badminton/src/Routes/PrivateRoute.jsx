@@ -1,23 +1,37 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-// Adjust these two lines to match how you store login data
+const DASHBOARDS = {
+    player: "/player/dashboard",
+    parent: "/player/dashboard",
+    coach: "/coach/dashboard",
+};
+
 const getToken = () => localStorage.getItem("token");
-const getRole = () => localStorage.getItem("role"); // e.g. "coach", "player", "admin"
 
-export default function PrivateRoute({ children, allowedRoles, redirectTo = "/auth" }) {
-  const location = useLocation();
-  const token = getToken();
+const getUser = () => {
+    try {
+        return JSON.parse(localStorage.getItem("user") || "null");
+    } catch {
+        return null;
+    }
+};
 
-  // 1. Not logged in: go to login and remember where they were headed
-  if (!token) {
-    return <Navigate to={redirectTo} state={{ from: location }} replace />;
-  }
+export default function PrivateRoute({
+    children,
+    allowedRoles,
+    redirectTo = "/login",
+}) {
+    const location = useLocation();
+    const token = getToken();
+    const user = getUser();
 
-  // 2. Logged in but wrong role: send to home
-  if (allowedRoles && !allowedRoles.includes(getRole())) {
-    return <Navigate to="/" replace />;
-  }
+    if (!token || !user) {
+        return <Navigate to={redirectTo} state={{ from: location }} replace />;
+    }
 
-  // 3. Allowed: render the page (works with children or nested routes)
-  return children ? children : <Outlet />;
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+        return <Navigate to={DASHBOARDS[user.role] || "/login"} replace />;
+    }
+
+    return children ? children : <Outlet />;
 }
