@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./Players.css";
+import "./players.css";
 const DATA = [
     { id: 1, name: "Riya Sen", age: 16, batch: "Elite", level: "Advanced", status: "Active" },
     { id: 2, name: "Arjun Das", age: 14, batch: "Senior", level: "Intermediate", status: "Active" },
