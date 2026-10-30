@@ -1,4 +1,4 @@
-import "./Schedule.css";
+import "./schedule.css";
 const WEEK = {
     Monday: [["6:00 AM", "Junior batch", "Court 1"], ["6:30 PM", "Elite batch", "Court 2"]],
     Tuesday: [["4:30 PM", "Senior batch", "Court 1"]],
