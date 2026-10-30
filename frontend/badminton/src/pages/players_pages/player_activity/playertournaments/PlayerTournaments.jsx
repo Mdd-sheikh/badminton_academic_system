@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./PlayerTournaments.css";
+import "./playerTournaments.css";
 export default function PlayerTournaments() {
   const [list, setList] = useState([
     { name: "Kolkata Junior Open", date: "14 Nov 2026", venue: "Salt Lake Indoor Stadium", joined: true },
