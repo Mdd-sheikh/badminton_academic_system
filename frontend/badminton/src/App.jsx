@@ -46,6 +46,7 @@ import PlayerTournaments from './pages/players_pages/player_activity/playertourn
 import PlayerNotifications from './pages/players_pages/player_activity/playernotifications/PlayerNotifications';
 import PlayerSettings from './pages/players_pages/player_activity/playersettings/PlayerSettings';
 
+
 function App() {
   return (
     <>
