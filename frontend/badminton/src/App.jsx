@@ -35,7 +35,7 @@ import ParentSettings from './pages/parent_pages/parent_activity/parentsettings/
 
 // Player
 import DashboardPl from './pages/players_pages/dashboard/player_Dashboard';
-import PlayerHome from './pages/players_pages/player_activity/playerhome/PlayerHome';
+import PlayerHome from './pages/players_pages/player_activity/playerhome/Playerhome';
 import PlayerPerformance from './pages/players_pages/player_activity/myperformance/MyPerformance';
 import PlayerTraining from './pages/players_pages/player_activity/mytraining/MyTraining';
 import PlayerMatches from './pages/players_pages/player_activity/mymatches/MyMatches';
