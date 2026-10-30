@@ -5,6 +5,7 @@ const DASHBOARDS = {
     parent: "/player/dashboard",
     coach: "/coach/dashboard",
 };
+/* for example only*/
 
 const getToken = () => localStorage.getItem("token");
 
