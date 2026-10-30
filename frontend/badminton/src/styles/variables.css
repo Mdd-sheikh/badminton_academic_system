@@ -1,0 +1,100 @@
+/* ===================================
+   SMASHPOINT ACADEMY — GLOBAL COLORS
+=================================== */
+
+:root {
+    /* Brand colors */
+    --sp-primary: #27d982;
+    --sp-primary-hover: #18bf6d;
+    --sp-primary-light: #80f0b6;
+    --sp-primary-soft: rgba(39, 217, 130, 0.09);
+    --sp-primary-glow: rgba(39, 217, 130, 0.2);
+
+    /* Background colors */
+    --sp-bg: #ffffff;
+    --sp-bg-dark: #101411;
+    --sp-bg-card: #171d19;
+    --sp-bg-glass: rgba(255, 255, 255, 0.82);
+    --sp-bg-glass-dark: rgba(12, 16, 14, 0.78);
+    --sp-bg-menu: rgba(255, 255, 255, 0.96);
+    --sp-bg-menu-dark: rgba(15, 20, 17, 0.97);
+
+    /* Text colors */
+    --sp-text: #17221c;
+    --sp-text-dark: #f3f8f4;
+    --sp-text-muted: #748078;
+    --sp-text-muted-dark: #9ca9a0;
+    --sp-text-subtle: #a1ada5;
+
+    /* Button text */
+    --sp-on-primary: #072d19;
+
+    /* Borders */
+    --sp-border: rgba(120, 140, 128, 0.17);
+    --sp-border-dark: rgba(255, 255, 255, 0.1);
+
+    /* Effects */
+    --sp-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+    --sp-shadow-dark: 0 10px 35px rgba(0, 0, 0, 0.25);
+    --sp-blur: 18px;
+
+    /* Status colors */
+    --sp-success: #27d982;
+    --sp-warning: #f5b942;
+    --sp-error: #ef4444;
+    --sp-info: #3b82f6;
+
+    /* Layout */
+    --sp-navbar-height: 76px;
+    --sp-navbar-height-mobile: 64px;
+    --sp-container-width: 1320px;
+
+    /* Border radius */
+    --sp-radius-sm: 7px;
+    --sp-radius-md: 10px;
+    --sp-radius-lg: 15px;
+    --sp-radius-xl: 20px;
+
+    /* Transitions */
+    --sp-transition: 0.2s ease;
+    --sp-transition-slow: 0.3s ease;
+}
+
+/* Global dark theme */
+:root[data-theme="dark"] {
+    --sp-bg: #101411;
+    --sp-text: #f3f8f4;
+    --sp-text-muted: #a1ada5;
+    --sp-border: rgba(255, 255, 255, 0.09);
+    --sp-bg-glass: rgba(12, 16, 14, 0.78);
+    --sp-bg-menu: rgba(15, 20, 17, 0.97);
+    --sp-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* Global reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--sp-navbar-height);
+}
+
+body {
+    margin: 0;
+    background: var(--sp-bg);
+    color: var(--sp-text);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    transition:
+        background var(--sp-transition-slow),
+        color var(--sp-transition-slow);
+}
+
+@media (max-width: 700px) {
+    html {
+        scroll-padding-top: var(--sp-navbar-height-mobile);
+    }
+}

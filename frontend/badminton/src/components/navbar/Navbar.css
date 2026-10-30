@@ -1,0 +1,513 @@
+/* ================================
+   SMASHPOINT ACADEMY NAVBAR
+================================ */
+
+:root {
+    --sp-green: #27d982;
+    --sp-green-hover: #18bf6d;
+    --sp-bg: #ffffff;
+    --sp-text: #17221c;
+    --sp-muted: #748078;
+    --sp-border: rgba(120, 140, 128, 0.17);
+    --sp-glass: rgba(255, 255, 255, 0.82);
+    --sp-menu-bg: rgba(255, 255, 255, 0.96);
+    --sp-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+}
+
+:root[data-theme="dark"] {
+    --sp-bg: #101411;
+    --sp-text: #f3f8f4;
+    --sp-muted: #a1ada5;
+    --sp-border: rgba(255, 255, 255, 0.09);
+    --sp-glass: rgba(12, 16, 14, 0.78);
+    --sp-menu-bg: rgba(15, 20, 17, 0.97);
+    --sp-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* Sticky header */
+
+.sp-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    color: var(--sp-text);
+    background: var(--sp-bg);
+    border-bottom: 1px solid transparent;
+    transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* Transparent glass effect after scrolling */
+
+.sp-navbar.is-scrolled {
+    background: var(--sp-glass);
+    border-bottom-color: var(--sp-border);
+    box-shadow: var(--sp-shadow);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
+}
+
+/* Main container */
+
+.sp-nav-container {
+    width: min(100% - 48px, 1440px);
+    min-height: 76px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+}
+
+/* Brand */
+
+.sp-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+    color: var(--sp-text);
+    text-decoration: none;
+}
+
+.sp-brand-mark {
+    width: 39px;
+    height: 39px;
+    display: grid;
+    place-items: center;
+    color: var(--sp-green);
+}
+
+.sp-brand-mark svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.sp-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.sp-brand-name {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.55px;
+}
+
+.sp-brand-subtitle {
+    margin-top: 4px;
+    color: var(--sp-green);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+}
+
+/* Desktop links */
+
+.sp-nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 2.3vw, 34px);
+}
+
+.sp-nav-link {
+    position: relative;
+    padding: 10px 0;
+    color: var(--sp-muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+.sp-nav-link::after {
+    position: absolute;
+    content: "";
+    left: 0;
+    bottom: 3px;
+    width: 100%;
+    height: 2px;
+    background: var(--sp-green);
+    border-radius: 5px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+}
+
+
+
+/* Right-side actions */
+
+.sp-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.sp-icon-btn,
+.sp-profile-btn,
+.sp-menu-btn {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    border: 0;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.sp-icon-btn {
+    width: 38px;
+    height: 38px;
+    color: var(--sp-muted);
+    background: transparent;
+    border-radius: 50%;
+    font-size: 17px;
+}
+
+.sp-icon-btn:hover {
+    color: var(--sp-green);
+    background: var(--sp-border);
+}
+
+.sp-join-btn {
+    min-height: 39px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    color: #072d19;
+    background: var(--sp-green);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.sp-join-btn:hover {
+    background: var(--sp-green-hover);
+    box-shadow: 0 5px 18px rgba(39, 217, 130, 0.2);
+    transform: translateY(-1px);
+}
+
+.sp-profile-btn {
+    width: 37px;
+    height: 37px;
+    color: #092e1b;
+    background: var(--sp-green);
+    border-radius: 50%;
+    font-size: 17px;
+    text-decoration: none;
+}
+
+.sp-profile-btn:hover {
+    background: var(--sp-green-hover);
+    transform: scale(1.06);
+}
+
+.sp-menu-btn {
+    display: none;
+    width: 40px;
+    height: 40px;
+    color: var(--sp-text);
+    background: transparent;
+    border-radius: 10px;
+    font-size: 23px;
+}
+
+.sp-menu-btn:hover {
+    background: var(--sp-border);
+}
+
+/* Mobile dropdown */
+
+.sp-mobile-menu {
+    display: none;
+}
+
+/* Keyboard focus accessibility */
+
+.sp-navbar a:focus-visible,
+.sp-navbar button:focus-visible {
+    outline: 2px solid var(--sp-green);
+    outline-offset: 4px;
+}
+
+/* ================================
+   TABLET AND MOBILE
+================================ */
+
+@media (max-width: 900px) {
+    .sp-nav-container {
+        width: calc(100% - 32px);
+        min-height: 68px;
+        gap: 16px;
+    }
+
+    .sp-nav-links {
+        gap: 15px;
+    }
+
+    .sp-nav-link {
+        font-size: 12px;
+    }
+
+    .sp-nav-actions {
+        gap: 8px;
+    }
+
+    .sp-join-btn {
+        padding-inline: 15px;
+    }
+}
+
+@media (max-width: 700px) {
+    .sp-nav-container {
+        width: calc(100% - 28px);
+        min-height: 64px;
+        gap: 10px;
+    }
+
+    .sp-brand-mark {
+        width: 34px;
+        height: 34px;
+    }
+
+    .sp-brand-name {
+        font-size: 14px;
+    }
+
+    .sp-brand-subtitle {
+        font-size: 9px;
+        letter-spacing: 1.5px;
+    }
+
+    .sp-nav-links {
+        display: none;
+    }
+
+    .sp-nav-actions {
+        gap: 7px;
+    }
+
+    .sp-icon-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+    .sp-join-btn {
+        min-height: 35px;
+        padding-inline: 13px;
+        border-radius: 8px;
+        font-size: 11px;
+    }
+
+    .sp-profile-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
+    }
+
+    .sp-menu-btn {
+        display: inline-grid;
+        width: 35px;
+        height: 35px;
+        font-size: 21px;
+    }
+
+    /* Mobile panel */
+
+    .sp-mobile-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        display: block;
+        max-height: calc(100dvh - 64px);
+        overflow-y: auto;
+        padding: 0 14px;
+        background: var(--sp-menu-bg);
+        border-bottom: 1px solid var(--sp-border);
+        box-shadow: var(--sp-shadow);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition:
+            opacity 0.22s ease,
+            transform 0.22s ease,
+            visibility 0.22s ease;
+    }
+
+    .sp-mobile-menu.open {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    .sp-mobile-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: min(100%, 520px);
+        margin-inline: auto;
+        padding: 14px 0 22px;
+    }
+
+    .sp-mobile-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 46px;
+        padding: 0 15px;
+        color: var(--sp-muted);
+        background: transparent;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+            color 0.2s ease,
+            background 0.2s ease;
+    }
+
+    .sp-mobile-link:hover,
+    .sp-mobile-link.active {
+        color: var(--sp-green);
+        background: rgba(39, 217, 130, 0.09);
+    }
+
+    .sp-mobile-divider {
+        height: 1px;
+        margin: 8px 0;
+        background: var(--sp-border);
+    }
+
+    .sp-mobile-join {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 47px;
+        margin-top: 8px;
+        padding: 0 16px;
+        color: #072d19;
+        background: var(--sp-green);
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .sp-join-arrow {
+        transform: rotate(-90deg);
+    }
+
+    .sp-mobile-theme {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 44px;
+        margin-top: 8px;
+        padding: 0 15px;
+        color: var(--sp-text);
+        background: transparent;
+        border: 0;
+        border-radius: 10px;
+        font: inherit;
+        font-size: 13px;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .sp-mobile-theme:hover {
+        background: var(--sp-border);
+    }
+}
+
+/* Very small phones */
+
+@media (max-width: 380px) {
+    .sp-nav-container {
+        width: calc(100% - 20px);
+    }
+
+    .sp-brand {
+        gap: 5px;
+    }
+
+    .sp-brand-mark {
+        width: 29px;
+        height: 29px;
+    }
+
+    .sp-brand-name {
+        font-size: 12px;
+    }
+
+    .sp-brand-subtitle {
+        font-size: 8px;
+    }
+
+    .sp-nav-actions {
+        gap: 4px;
+    }
+
+    .sp-join-btn {
+        padding-inline: 9px;
+        font-size: 10px;
+    }
+
+    .sp-icon-btn {
+        width: 29px;
+    }
+
+    .sp-profile-btn {
+        width: 30px;
+        height: 30px;
+    }
+
+    .sp-menu-btn {
+        width: 30px;
+        height: 34px;
+    }
+}
+
+/* Respect reduced-motion preferences */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sp-navbar,
+    .sp-navbar *,
+    .sp-mobile-menu {
+        scroll-behavior: auto !important;
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+
+
+/* for navlink appearance */
+/* Default navigation links */
+/* Underline ONLY the active link */
+/* Show underline only for the selected link */

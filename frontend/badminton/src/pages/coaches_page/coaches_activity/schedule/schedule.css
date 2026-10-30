@@ -1,0 +1,44 @@
+.sc {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+    color: var(--c-text)
+}
+
+.sc-day {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 16px;
+    display: grid;
+    gap: 8px;
+    align-content: start
+}
+
+.sc-day h2 {
+    margin: 0;
+    font-size: 15px
+}
+
+.sc-day p {
+    margin: 0;
+    color: var(--c-mute);
+    font-size: 13px
+}
+
+.sc-slot {
+    border-left: 3px solid var(--c-acc);
+    padding: 4px 10px;
+    display: grid;
+    font-size: 13px
+}
+
+.sc-slot em {
+    color: var(--c-mute);
+    font-style: normal
+}

@@ -1,0 +1,59 @@
+.mtr {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 12px;
+    max-width: 640px;
+    color: var(--c-text)
+}
+
+.mtr-sum {
+    margin: 0;
+    color: var(--c-mute);
+    font-size: 14px
+}
+
+.mtr-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 16px
+}
+
+.mtr-card h2 {
+    margin: 0 0 8px;
+    font-size: 16px
+}
+
+.mtr-card label {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid var(--c-line);
+    cursor: pointer
+}
+
+.mtr-card input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--c-acc)
+}
+
+.mtr-card b {
+    display: block;
+    font-size: 14px
+}
+
+.mtr-card span {
+    font-size: 13px;
+    color: var(--c-mute)
+}
+
+.mtr-card .is-done b {
+    text-decoration: line-through;
+    color: var(--c-mute)
+}

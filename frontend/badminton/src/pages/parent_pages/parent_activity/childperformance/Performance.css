@@ -1,0 +1,99 @@
+.pfm {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    color: var(--c-text)
+}
+
+.pfm-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 18px
+}
+
+.pfm-wide {
+    grid-column: 1/-1
+}
+
+.pfm-card h2 {
+    margin: 0 0 14px;
+    font-size: 16px
+}
+
+.pfm-card p {
+    margin: 0;
+    color: var(--c-mute);
+    font-size: 14px;
+    line-height: 1.6
+}
+
+.pfm-skill {
+    display: grid;
+    grid-template-columns: 110px 1fr 30px;
+    gap: 4px 10px;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px
+}
+
+.pfm-skill em {
+    grid-column: 2/-1;
+    font-style: normal;
+    font-size: 12px;
+    color: var(--c-mute)
+}
+
+.pfm-track {
+    height: 8px;
+    background: var(--c-line);
+    border-radius: 9px;
+    overflow: hidden
+}
+
+.pfm-track i {
+    display: block;
+    height: 100%;
+    background: var(--c-acc)
+}
+
+.pfm-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 180px
+}
+
+.pfm-col {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px
+}
+
+.pfm-col i {
+    width: 100%;
+    background: var(--c-acc);
+    border-radius: 6px 6px 0 0;
+    display: block
+}
+
+.pfm-col b {
+    color: var(--c-mute);
+    font-weight: 500
+}
+
+@media(max-width:800px) {
+    .pfm {
+        grid-template-columns: 1fr
+    }
+}

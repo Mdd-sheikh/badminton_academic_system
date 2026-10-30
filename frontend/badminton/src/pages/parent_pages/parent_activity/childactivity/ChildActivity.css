@@ -1,0 +1,74 @@
+.pac {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 12px;
+    max-width: 720px;
+    color: var(--c-text)
+}
+
+.pac-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap
+}
+
+.pac-tabs button {
+    background: none;
+    border: 1px solid var(--c-line);
+    color: var(--c-mute);
+    border-radius: 99px;
+    padding: 7px 14px;
+    cursor: pointer
+}
+
+.pac-tabs .is-on {
+    background: var(--c-acc);
+    color: #06130d;
+    border-color: var(--c-acc);
+    font-weight: 600
+}
+
+.pac-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px
+}
+
+.pac-list li {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--c-line)
+}
+
+.pac-list li:last-child {
+    border: 0
+}
+
+.pac-date {
+    color: var(--c-mute);
+    font-size: 13px
+}
+
+.pac-list b {
+    font-size: 14px;
+    color: var(--c-acc)
+}
+
+.pac-list p {
+    margin: 2px 0 0;
+    font-size: 14px
+}
+
+.pac-empty {
+    color: var(--c-mute);
+    display: block !important
+}

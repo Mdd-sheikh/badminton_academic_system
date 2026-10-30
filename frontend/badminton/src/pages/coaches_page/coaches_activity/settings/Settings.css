@@ -1,0 +1,71 @@
+.st {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 14px;
+    max-width: 560px;
+    color: var(--c-text)
+}
+
+.st section {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 18px;
+    display: grid;
+    gap: 12px
+}
+
+.st h2 {
+    margin: 0;
+    font-size: 16px
+}
+
+.st-field {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--c-mute)
+}
+
+.st-field input {
+    background: transparent;
+    border: 1px solid var(--c-line);
+    color: var(--c-text);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font: inherit
+}
+
+.st-switch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px
+}
+
+.st-switch input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--c-acc)
+}
+
+.st>button {
+    justify-self: start;
+    background: var(--c-acc);
+    color: #06130d;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.st-ok {
+    margin: 0;
+    color: var(--c-acc);
+    font-size: 14px
+}

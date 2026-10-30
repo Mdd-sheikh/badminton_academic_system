@@ -1,0 +1,46 @@
+.ach {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+    color: var(--c-text)
+}
+
+.ach article {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 18px;
+    display: grid;
+    gap: 4px;
+    opacity: .6
+}
+
+.ach article.is-got {
+    opacity: 1;
+    border-top: 3px solid var(--c-acc)
+}
+
+.ach h2 {
+    margin: 0;
+    font-size: 16px
+}
+
+.ach p {
+    margin: 0;
+    color: var(--c-mute);
+    font-size: 14px
+}
+
+.ach small {
+    margin-top: 6px;
+    color: var(--c-mute)
+}
+
+.ach .is-got small {
+    color: var(--c-acc)
+}

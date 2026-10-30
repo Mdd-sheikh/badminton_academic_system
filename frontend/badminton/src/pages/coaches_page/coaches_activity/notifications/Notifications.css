@@ -1,0 +1,61 @@
+.nt {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 10px;
+    max-width: 680px;
+    color: var(--c-text)
+}
+
+.nt-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.nt-head p {
+    margin: 0;
+    color: var(--c-mute)
+}
+
+.nt button {
+    background: none;
+    border: 1px solid var(--c-line);
+    color: var(--c-text);
+    border-radius: 8px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-size: 13px
+}
+
+.nt button:disabled {
+    opacity: .4;
+    cursor: default
+}
+
+.nt-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 14px 16px
+}
+
+.nt-item.is-new {
+    border-left: 3px solid var(--c-acc)
+}
+
+.nt-item p {
+    margin: 0 0 4px;
+    font-size: 14px
+}
+
+.nt-item small {
+    color: var(--c-mute)
+}

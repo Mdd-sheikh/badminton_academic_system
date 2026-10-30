@@ -1,0 +1,104 @@
+.mpf {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    color: var(--c-text)
+}
+
+.mpf-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 18px
+}
+
+.mpf-wide {
+    grid-column: 1/-1
+}
+
+.mpf-card h2 {
+    margin: 0 0 14px;
+    font-size: 16px
+}
+
+.mpf-skill {
+    display: grid;
+    grid-template-columns: 110px 1fr 30px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px
+}
+
+.mpf-goal {
+    display: grid;
+    grid-template-columns: 150px 1fr 80px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px
+}
+
+.mpf-goal em {
+    font-style: normal;
+    color: var(--c-mute);
+    font-size: 13px
+}
+
+.mpf-track {
+    height: 8px;
+    background: var(--c-line);
+    border-radius: 9px;
+    overflow: hidden
+}
+
+.mpf-track i {
+    display: block;
+    height: 100%;
+    background: var(--c-acc)
+}
+
+.mpf-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 180px
+}
+
+.mpf-col {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px
+}
+
+.mpf-col i {
+    width: 100%;
+    background: var(--c-acc);
+    border-radius: 6px 6px 0 0;
+    display: block
+}
+
+.mpf-col b {
+    color: var(--c-mute);
+    font-weight: 500
+}
+
+@media(max-width:800px) {
+    .mpf {
+        grid-template-columns: 1fr
+    }
+
+    .mpf-goal {
+        grid-template-columns: 1fr
+    }
+}

@@ -1,0 +1,78 @@
+.an2 {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 14px;
+    color: var(--c-text);
+    align-items: start
+}
+
+.an2-form,
+.an2-list article {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 18px
+}
+
+.an2-form {
+    display: grid;
+    gap: 10px
+}
+
+.an2-form h2 {
+    margin: 0;
+    font-size: 16px
+}
+
+.an2-form input,
+.an2-form textarea,
+.an2-form select {
+    background: transparent;
+    border: 1px solid var(--c-line);
+    color: inherit;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font: inherit
+}
+
+.an2-form button {
+    justify-self: start;
+    background: var(--c-acc);
+    color: #06130d;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.an2-list {
+    display: grid;
+    gap: 10px
+}
+
+.an2-list h3 {
+    margin: 0 0 6px;
+    font-size: 16px
+}
+
+.an2-list p {
+    margin: 0 0 8px;
+    color: var(--c-mute);
+    font-size: 14px
+}
+
+.an2-list small {
+    color: var(--c-mute)
+}
+
+@media(max-width:800px) {
+    .an2 {
+        grid-template-columns: 1fr
+    }
+}

@@ -1,0 +1,44 @@
+.msc {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 10px;
+    max-width: 680px;
+    color: var(--c-text)
+}
+
+.msc-row {
+    display: grid;
+    grid-template-columns: 100px 80px 1fr;
+    gap: 12px;
+    align-items: center;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-left: 3px solid var(--c-acc);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px
+}
+
+.msc-row p {
+    margin: 0
+}
+
+.msc-row em {
+    font-style: normal;
+    color: var(--c-mute);
+    font-size: 13px
+}
+
+.msc-row span {
+    color: var(--c-mute)
+}
+
+@media(max-width:600px) {
+    .msc-row {
+        grid-template-columns: 1fr
+    }
+}

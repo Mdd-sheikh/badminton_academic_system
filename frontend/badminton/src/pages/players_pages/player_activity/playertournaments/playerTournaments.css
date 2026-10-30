@@ -1,0 +1,49 @@
+.ptn {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+    color: var(--c-text)
+}
+
+.ptn article {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 18px;
+    display: grid;
+    gap: 4px
+}
+
+.ptn h2 {
+    margin: 0 0 4px;
+    font-size: 18px
+}
+
+.ptn p {
+    margin: 0;
+    color: var(--c-mute);
+    font-size: 14px
+}
+
+.ptn button {
+    justify-self: start;
+    margin-top: 10px;
+    background: var(--c-acc);
+    color: #06130d;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.ptn button.is-joined {
+    background: none;
+    border: 1px solid var(--c-line);
+    color: var(--c-text)
+}

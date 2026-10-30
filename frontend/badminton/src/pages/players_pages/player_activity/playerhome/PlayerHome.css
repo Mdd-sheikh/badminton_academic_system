@@ -1,0 +1,73 @@
+.plh {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 14px;
+    color: var(--c-text)
+}
+
+.plh-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px
+}
+
+.plh-card h2 {
+    margin: 0 0 4px;
+    font-size: 16px
+}
+
+.plh-hero h2 {
+    font-size: 22px
+}
+
+.plh-hero p {
+    margin: 0;
+    color: var(--c-mute)
+}
+
+.plh-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px
+}
+
+.plh-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--c-acc)
+}
+
+.plh-lbl {
+    color: var(--c-mute);
+    font-size: 14px;
+    margin: 0
+}
+
+.plh-cols {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 12px
+}
+
+.plh ul {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--c-mute)
+}
+
+@media(max-width:800px) {
+    .plh-cols {
+        grid-template-columns: 1fr
+    }
+}

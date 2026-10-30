@@ -1,0 +1,61 @@
+.mmt {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 10px;
+    max-width: 680px;
+    color: var(--c-text)
+}
+
+.mmt-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px
+}
+
+.mmt-tabs button {
+    background: none;
+    border: 1px solid var(--c-line);
+    color: var(--c-mute);
+    border-radius: 99px;
+    padding: 7px 16px;
+    cursor: pointer
+}
+
+.mmt-tabs .is-on {
+    background: var(--c-acc);
+    color: #06130d;
+    border-color: var(--c-acc);
+    font-weight: 600
+}
+
+.mmt-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px
+}
+
+.mmt-row b {
+    flex: 1
+}
+
+.mmt-row em {
+    font-style: normal;
+    color: var(--c-mute)
+}
+
+.is-win {
+    color: var(--c-acc)
+}
+
+.is-loss {
+    color: #ff8a5c
+}

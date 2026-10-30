@@ -1,0 +1,78 @@
+.at {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 14px;
+    max-width: 560px;
+    color: var(--c-text)
+}
+
+.at-bar {
+    display: flex;
+    gap: 14px;
+    align-items: center
+}
+
+.at-bar select {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    color: inherit;
+    border-radius: 8px;
+    padding: 9px 12px
+}
+
+.at-bar span {
+    color: var(--c-mute);
+    font-size: 14px
+}
+
+.at-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px
+}
+
+.at-list li {
+    border-bottom: 1px solid var(--c-line)
+}
+
+.at-list li:last-child {
+    border: 0
+}
+
+.at-list label {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer
+}
+
+.at-list input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--c-acc)
+}
+
+.at-save {
+    justify-self: start;
+    background: var(--c-acc);
+    color: #06130d;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.at-ok {
+    margin: 0;
+    color: var(--c-acc);
+    font-size: 14px
+}

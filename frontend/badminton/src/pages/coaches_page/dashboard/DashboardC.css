@@ -1,0 +1,245 @@
+/* ===================================
+   COACH DASHBOARD LAYOUT
+   Uses the global --sp-* variables.
+   Local --d-* tokens add the card / rail
+   surfaces for light and dark themes.
+=================================== */
+
+.dash {
+    --d-rail: #eef3ef;
+    --d-card: #f5f8f6;
+    --d-hover: var(--sp-primary-soft);
+
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+    background: var(--sp-bg);
+    color: var(--sp-text);
+}
+
+:root[data-theme="dark"] .dash {
+    --d-rail: #0c100e;
+    --d-card: var(--sp-bg-card);
+}
+
+/* ---------- Sidebar ---------- */
+.dash-side {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 18px 12px;
+    background: var(--d-rail);
+    border-right: 1px solid var(--sp-border);
+}
+
+.dash-logo {
+    padding: 4px 10px 18px;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.dash-logo span {
+    color: var(--sp-primary);
+}
+
+.dash-group {
+    margin: 16px 0 4px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sp-text-muted);
+}
+
+.dash-link {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: var(--sp-radius-md);
+    color: var(--sp-text-muted);
+    font-weight: 500;
+    text-decoration: none;
+    transition: background var(--sp-transition), color var(--sp-transition);
+}
+
+.dash-link:hover {
+    background: var(--d-hover);
+    color: var(--sp-text);
+}
+
+.dash-link.is-active {
+    background: var(--d-hover);
+    color: var(--sp-text);
+    box-shadow: inset 3px 0 var(--sp-primary);
+}
+
+.dash-link.is-active svg {
+    color: var(--sp-primary);
+}
+
+.dash-link:focus-visible,
+.dash-icon:focus-visible {
+    outline: 2px solid var(--sp-primary);
+    outline-offset: 2px;
+}
+
+/* ---------- Top bar ---------- */
+.dash-body {
+    min-width: 0;
+}
+
+.dash-top {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 64px;
+    padding: 0 28px;
+    background: var(--d-rail);
+    border-bottom: 1px solid var(--sp-border);
+}
+
+.dash-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.dash-search {
+    flex: 1;
+    max-width: 380px;
+    height: 38px;
+    margin-left: 12px;
+    padding: 0 16px;
+    border-radius: 99px;
+    border: 1px solid var(--sp-border);
+    background: var(--sp-bg);
+    color: var(--sp-text);
+    font: inherit;
+}
+
+.dash-search::placeholder {
+    color: var(--sp-text-muted);
+}
+
+.dash-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.dash-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--sp-border);
+    background: var(--d-card);
+    color: var(--sp-text);
+    cursor: pointer;
+    transition: border-color var(--sp-transition);
+}
+
+.dash-icon:hover {
+    border-color: var(--sp-primary);
+}
+
+.dash-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    padding: 1px 5px;
+    border-radius: 9px;
+    background: var(--sp-primary);
+    color: var(--sp-on-primary);
+    font-size: 10px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.dash-avatar {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--sp-primary);
+    color: var(--sp-on-primary);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.dash-burger,
+.dash-scrim {
+    display: none;
+}
+
+/* ---------- Page area (where Home.jsx etc. render) ---------- */
+.dash-page {
+    padding: 26px 28px 48px;
+    max-width: var(--sp-container-width);
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 900px) {
+    .dash {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-side {
+        position: fixed;
+        z-index: 20;
+        left: -270px;
+        width: 250px;
+        transition: left var(--sp-transition-slow);
+        box-shadow: var(--sp-shadow-dark);
+    }
+
+    .dash-side.is-open {
+        left: 0;
+    }
+
+    .dash-scrim {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 15;
+        border: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .dash-burger {
+        display: grid;
+    }
+
+    .dash-top {
+        height: var(--sp-navbar-height-mobile);
+        padding: 0 14px;
+    }
+
+    .dash-search {
+        display: none;
+    }
+
+    .dash-page {
+        padding: 18px 14px 40px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .dash-side,
+    .dash-link,
+    .dash-icon {
+        transition: none;
+    }
+}

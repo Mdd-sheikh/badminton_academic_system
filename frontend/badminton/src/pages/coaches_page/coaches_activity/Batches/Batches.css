@@ -1,0 +1,74 @@
+.bt {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 14px;
+    color: var(--c-text)
+}
+
+.bt-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.bt-head p {
+    margin: 0;
+    color: var(--c-mute)
+}
+
+.bt-head button {
+    background: var(--c-acc);
+    color: #06130d;
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.bt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px
+}
+
+.bt-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 18px;
+    display: grid;
+    gap: 8px
+}
+
+.bt-card h2 {
+    margin: 0;
+    font-size: 18px
+}
+
+.bt-card p {
+    margin: 0;
+    color: var(--c-mute);
+    font-size: 13px
+}
+
+.bt-card span {
+    font-size: 13px
+}
+
+.bt-track {
+    height: 6px;
+    background: var(--c-line);
+    border-radius: 9px;
+    overflow: hidden
+}
+
+.bt-track i {
+    display: block;
+    height: 100%;
+    background: var(--c-acc)
+}

@@ -1,0 +1,65 @@
+.mt {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    display: grid;
+    gap: 10px;
+    color: var(--c-text)
+}
+
+.mt-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px
+}
+
+.mt-tabs button {
+    background: none;
+    border: 1px solid var(--c-line);
+    color: var(--c-mute);
+    border-radius: 99px;
+    padding: 7px 16px;
+    cursor: pointer
+}
+
+.mt-tabs .is-on {
+    background: var(--c-acc);
+    color: #06130d;
+    border-color: var(--c-acc);
+    font-weight: 600
+}
+
+.mt-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr 1.3fr;
+    gap: 12px;
+    align-items: center;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px
+}
+
+.mt-row span {
+    color: var(--c-mute)
+}
+
+.mt-row em {
+    font-style: normal;
+    text-align: right;
+    color: var(--c-mute)
+}
+
+@media(max-width:700px) {
+    .mt-row {
+        grid-template-columns: 1fr auto 1fr
+    }
+
+    .mt-row em {
+        grid-column: 1/-1;
+        text-align: left
+    }
+}
