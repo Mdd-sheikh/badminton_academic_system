@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import "./Players.css";
+import "./players.css";
 import { useCoachData } from "../../../academy_owner/db/coachAccess";
 export default function Players() {
   const {coach,batches,players,loading}=useCoachData();
