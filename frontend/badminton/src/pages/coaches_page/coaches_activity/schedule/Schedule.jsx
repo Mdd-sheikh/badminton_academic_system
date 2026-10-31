@@ -1,5 +1,5 @@
 
-import "./Schedule.css";
+import "./schedule.css";
 import { useCoachData } from "../../../academy_owner/db/coachAccess";
 export default function Schedule() {
   const {coach,batches,players,loading}=useCoachData();
