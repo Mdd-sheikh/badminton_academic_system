@@ -1,4 +1,4 @@
-import "./PlayerTournaments.css";
+import "./playerTournaments.css";
 import { usePlayerData } from "../../../academy_owner/db/playerAccess.js";
 import { fmtDate } from "../../../academy_owner/db/db.js";
 import PlayerState from "../../../../cards/share/PlayerState";
