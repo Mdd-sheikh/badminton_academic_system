@@ -26,7 +26,7 @@ import Settings from './pages/coaches_page/coaches_activity/settings/Settings';
 // Parent (currently disabled)
 
 // Player (currently disabled)
-import DashboardPl from './pages/players_pages/dashboard/Player_Dashboard';
+import DashboardPl from './pages/players_pages/dashboard/DashboardPl';
 import PlayerHome from './pages/players_pages/player_activity/playerhome/Playerhome';
 import PlayerPerformance from './pages/players_pages/player_activity/myperformance/MyPerformance';
 import PlayerTraining from './pages/players_pages/player_activity/mytraining/MyTraining';
