@@ -1,0 +1,549 @@
+/* Shared styles for the Academy Owner dashboard.
+   Colours come from your existing theme variables; to apply Stadia branding,
+   change the fallbacks (or the variables) in the first block. */
+.o-page {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    --c-warn: #ff8a5c;
+    --c-ink: #06130d;
+    display: grid;
+    gap: 14px;
+    color: var(--c-text);
+    align-content: start
+}
+
+.o-page h2 {
+    margin: 0;
+    font-size: 16px
+}
+
+.o-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center
+}
+
+.o-bar .grow {
+    flex: 1
+}
+
+.o-page input:not([type=checkbox]):not([type=range]),
+.o-page select,
+.o-page textarea {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    color: inherit;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font: inherit;
+    min-width: 0
+}
+
+.o-page input[type=checkbox] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--c-acc)
+}
+
+.o-page input[type=range] {
+    accent-color: var(--c-acc);
+    width: 100%
+}
+
+.o-btn {
+    background: var(--c-acc);
+    color: var(--c-ink);
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px
+}
+
+.o-btn.ghost {
+    background: none;
+    border: 1px solid var(--c-line);
+    color: var(--c-text)
+}
+
+.o-btn.danger {
+    background: none;
+    border: 1px solid var(--c-warn);
+    color: var(--c-warn)
+}
+
+.o-btn.sm {
+    padding: 5px 10px;
+    font-size: 12px
+}
+
+.o-btn:disabled {
+    opacity: .45;
+    cursor: default
+}
+
+.o-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px
+}
+
+.o-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px
+}
+
+.o-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px
+}
+
+.o-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px
+}
+
+.o-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--c-acc)
+}
+
+.o-lbl {
+    color: var(--c-mute);
+    font-size: 13px;
+    margin: 0
+}
+
+.o-empty {
+    color: var(--c-mute);
+    text-align: center;
+    padding: 24px;
+    margin: 0
+}
+
+.o-wrap {
+    overflow-x: auto;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px
+}
+
+.o-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px
+}
+
+.o-wrap th,
+.o-wrap td {
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--c-line);
+    white-space: nowrap
+}
+
+.o-wrap th {
+    color: var(--c-mute);
+    font-weight: 500
+}
+
+.o-wrap tr:last-child td {
+    border: 0
+}
+
+.o-wrap td .o-btn+.o-btn {
+    margin-left: 6px
+}
+
+.o-tag {
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    background: var(--c-line);
+    color: var(--c-mute)
+}
+
+.o-tag.ok {
+    color: var(--c-acc)
+}
+
+.o-tag.warn {
+    color: var(--c-warn)
+}
+
+.o-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap
+}
+
+.o-tabs button {
+    background: none;
+    border: 1px solid var(--c-line);
+    color: var(--c-mute);
+    border-radius: 99px;
+    padding: 7px 14px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px
+}
+
+.o-tabs .on {
+    background: var(--c-acc);
+    color: var(--c-ink);
+    border-color: var(--c-acc);
+    font-weight: 600
+}
+
+.o-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    display: grid;
+    place-items: center;
+    z-index: 50;
+    padding: 16px
+}
+
+.o-modal {
+    background: var(--c-card);
+    color: var(--c-text);
+    border: 1px solid var(--c-line);
+    border-radius: 14px;
+    padding: 20px;
+    width: min(480px, 100%);
+    max-height: 90vh;
+    overflow: auto;
+    display: grid;
+    gap: 14px
+}
+
+.o-modal.is-wide {
+    width: min(720px, 100%)
+}
+
+.o-mh {
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.o-x {
+    background: none;
+    border: 0;
+    color: var(--c-mute);
+    font-size: 24px;
+    cursor: pointer
+}
+
+.o-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px
+}
+
+.o-form .full {
+    grid-column: 1/-1
+}
+
+.o-field {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--c-mute)
+}
+
+.o-field input,
+.o-field select,
+.o-field textarea {
+    color: var(--c-text)
+}
+
+.o-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap
+}
+
+.o-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap
+}
+
+.o-chip {
+    border: 1px solid var(--c-line);
+    background: none;
+    color: var(--c-mute);
+    border-radius: 99px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 13px
+}
+
+.o-chip.on {
+    background: var(--c-acc);
+    color: var(--c-ink);
+    border-color: var(--c-acc);
+    font-weight: 600
+}
+
+.o-pick {
+    max-height: 260px;
+    overflow: auto;
+    border: 1px solid var(--c-line);
+    border-radius: 8px
+}
+
+.o-pick label {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--c-line);
+    cursor: pointer;
+    font-size: 14px
+}
+
+.o-pick label:last-child {
+    border: 0
+}
+
+.o-cal {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px
+}
+
+.o-cal .h {
+    color: var(--c-mute);
+    font-size: 12px;
+    text-align: center;
+    padding: 4px
+}
+
+.o-day {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 8px;
+    min-height: 68px;
+    padding: 6px 8px;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font: inherit
+}
+
+.o-day:disabled {
+    opacity: .35;
+    cursor: default
+}
+
+.o-day.is-today {
+    border-color: var(--c-acc)
+}
+
+.o-day b {
+    font-size: 13px
+}
+
+.o-day small {
+    font-size: 11px;
+    color: var(--c-mute)
+}
+
+.o-day i {
+    display: block;
+    height: 4px;
+    border-radius: 9px;
+    background: var(--c-acc)
+}
+
+.o-day i.mid {
+    background: #f4c542
+}
+
+.o-day i.low {
+    background: var(--c-warn)
+}
+
+.o-mark {
+    display: flex;
+    gap: 4px
+}
+
+.o-mark button {
+    border: 1px solid var(--c-line);
+    background: none;
+    color: var(--c-mute);
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer
+}
+
+.o-mark .P.on {
+    background: var(--c-acc);
+    color: var(--c-ink);
+    border-color: var(--c-acc)
+}
+
+.o-mark .L.on {
+    background: #f4c542;
+    color: #222;
+    border-color: #f4c542
+}
+
+.o-mark .A.on {
+    background: var(--c-warn);
+    color: #220;
+    border-color: var(--c-warn)
+}
+
+.o-rowline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--c-line);
+    font-size: 14px
+}
+
+.o-rowline:last-child {
+    border: 0
+}
+
+.o-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 150px
+}
+
+.o-bars div {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--c-mute)
+}
+
+.o-bars i {
+    width: 100%;
+    background: var(--c-acc);
+    border-radius: 5px 5px 0 0;
+    display: block;
+    min-height: 2px
+}
+
+.o-metric {
+    display: grid;
+    gap: 6px
+}
+
+.o-metric>div {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px
+}
+
+.o-track {
+    height: 8px;
+    background: var(--c-line);
+    border-radius: 9px;
+    overflow: hidden
+}
+
+.o-track i {
+    display: block;
+    height: 100%;
+    background: var(--c-acc)
+}
+
+.o-bracket {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    padding: 6px 2px 14px
+}
+
+.o-round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 12px;
+    min-width: 210px
+}
+
+.o-round h3 {
+    margin: 0;
+    font-size: 13px;
+    color: var(--c-mute);
+    font-weight: 500
+}
+
+.o-match {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 13px
+}
+
+.o-side {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px
+}
+
+.o-side+.o-side {
+    border-top: 1px solid var(--c-line)
+}
+
+.o-side.win {
+    color: var(--c-acc);
+    font-weight: 600
+}
+
+.o-side.tbd {
+    color: var(--c-mute)
+}
+
+.o-champ {
+    border-left: 4px solid var(--c-acc)
+}
+
+@media(max-width:800px) {
+
+    .o-cols,
+    .o-form {
+        grid-template-columns: 1fr
+    }
+
+    .o-day {
+        min-height: 54px;
+        padding: 4px
+    }
+}

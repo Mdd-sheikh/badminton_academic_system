@@ -1,21 +1,43 @@
 import "./PlayerHome.css";
-const stats = [["Overall rating", 74], ["Attendance", "88%"], ["Wins", "7 of 11"], ["Day streak", 5]];
+import { usePlayerData, dayLabel, fmtTime } from "../../../academy_owner/db/playerAccess";
+import PlayerState from "../../../../cards/share/PlayerState";
+
 export default function PlayerHome() {
+  const d = usePlayerData();
+  if (!d.player) return <PlayerState loading={d.loading} />;
+
+  const { player, coach, batch, stats, rating, nextSession, training, latest } = d;
+  const stat = [
+    ["Overall rating", rating ?? "-"],
+    ["Attendance", stats.total ? `${stats.pct}%` : "-"],
+    ["Wins", `${stats.wins} of ${stats.played}`],
+    ["Session streak", stats.streak],
+  ];
+
+  const label = nextSession ? dayLabel(nextSession.date) : "";
+  const when = ["Today", "Tomorrow"].includes(label) ? label.toLowerCase() : label;
+  const todays = training.filter((x) => x.day === "Today");
+  const coachLast = coach ? coach.name.trim().split(/\s+/).pop() : "";
+
   return (
     <div className="plh">
       <section className="plh-card plh-hero">
-        <h2>Welcome back, Aarav</h2>
-        <p>Next up: Doubles strategy, tomorrow at 4:30 PM on Court 1.</p>
+        <h2>Welcome back, {player.name.split(" ")[0]}</h2>
+        <p>
+          {nextSession
+            ? `Next up: ${batch.name} training, ${when} at ${fmtTime(nextSession.time)} on Court ${nextSession.court}.`
+            : "No upcoming sessions are scheduled yet."}
+        </p>
       </section>
       <div className="plh-stats">
-        {stats.map(([l, v]) => (<div className="plh-card" key={l}><span className="plh-num">{v}</span><span className="plh-lbl">{l}</span></div>))}
+        {stat.map(([l, v]) => (<div className="plh-card" key={l}><span className="plh-num">{v}</span><span className="plh-lbl">{l}</span></div>))}
       </div>
       <div className="plh-cols">
         <section className="plh-card"><h2>Today's drills</h2>
-          <ul><li>Footwork ladder, 10 minutes</li><li>Smash practice, 30 shots</li><li>Cool-down stretching</li></ul>
+          <ul>{todays.map((x) => <li key={x.key}>{x.name}, {x.detail}</li>)}</ul>
         </section>
-        <section className="plh-card"><h2>Note from Coach Nandi</h2>
-          <p className="plh-lbl">Your net play is getting sharper. Keep your racket up on the return and recover to the centre faster.</p>
+        <section className="plh-card"><h2>{coachLast ? `Note from Coach ${coachLast}` : "Note from your coach"}</h2>
+          <p className="plh-lbl">{latest?.note || "No notes from your coach yet."}</p>
         </section>
       </div>
     </div>

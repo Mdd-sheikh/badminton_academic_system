@@ -1,15 +1,22 @@
 import "./MySchedule.css";
-const S = [
-  ["Tomorrow", "4:30 PM", "Doubles strategy", "Court 1"],
-  ["Saturday", "4:30 PM", "Match practice", "Court 2"],
-  ["Tuesday", "4:30 PM", "Footwork and fitness", "Court 1"],
-  ["14 Nov", "9:00 AM", "Kolkata Junior Open, round 1", "Salt Lake Indoor Stadium"],
-];
+import { usePlayerData, dayLabel, fmtTime } from "../../../academy_owner/db/playerAccess";
+import PlayerState from "../../../../cards/share/PlayerState";
+
 export default function MySchedule() {
+  const d = usePlayerData();
+  if (!d.player) return <PlayerState loading={d.loading} />;
+
+  const { batch, coach, sessions, upcoming } = d;
+  const rows = [
+    ...sessions.map((s) => ({ key: `s-${s.date}`, date: s.date, time: s.time, name: `${batch.name} training`, venue: `Court ${s.court}${coach ? ` · ${coach.name}` : ""}` })),
+    ...upcoming.map((m) => ({ key: `m-${m.id}`, date: m.date, time: m.time, name: `${m.tournamentName}, ${m.roundName} vs ${m.opponent}`, venue: m.venue })),
+  ].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).slice(0, 10);
+
   return (
     <div className="msc">
-      {S.map(([d, t, n, v]) => (
-        <div className="msc-row" key={d + n}><b>{d}</b><span>{t}</span><div><p>{n}</p><em>{v}</em></div></div>
+      {rows.length === 0 && <div className="msc-row"><p>Nothing is scheduled yet.</p></div>}
+      {rows.map((r) => (
+        <div className="msc-row" key={r.key}><b>{dayLabel(r.date)}</b><span>{fmtTime(r.time)}</span><div><p>{r.name}</p><em>{r.venue}</em></div></div>
       ))}
     </div>
   );

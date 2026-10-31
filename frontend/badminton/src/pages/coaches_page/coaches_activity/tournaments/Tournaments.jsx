@@ -1,20 +1,12 @@
+
 import "./Tournaments.css";
-const T = [
-  { name: "Kolkata Junior Open", date: "14 Nov 2026", venue: "Salt Lake Indoor Stadium", state: "Registration open", entered: 6 },
-  { name: "Under-17 State Cup", date: "5 Dec 2026", venue: "Netaji Indoor Stadium", state: "Registration open", entered: 3 },
-  { name: "Club Championship", date: "20 Sep 2026", venue: "SmashPoint Arena", state: "Finished", entered: 18 },
-];
+import { useCoachData } from "../../../academy_owner/db/coachAccess";
+import { fmtDate } from "../../../academy_owner/db/util";
 export default function Tournaments() {
-  return (
-    <div className="tn">
-      {T.map((t) => (
-        <article className="tn-card" key={t.name}>
-          <span className={`tn-state ${t.state === "Finished" ? "is-done" : ""}`}>{t.state}</span>
-          <h2>{t.name}</h2>
-          <p>{t.date}</p><p>{t.venue}</p>
-          <small>{t.entered} players entered</small>
-        </article>
-      ))}
-    </div>
-  );
+  const {coach,players,tournaments,loading}=useCoachData();const ids=new Set(players.map(p=>p.id));
+  if(loading)return <div className="tn">Loading tournaments…</div>;
+  if(!coach)return <div className="tn">Coach account is not linked.</div>;
+  return <div className="tn">{tournaments.map(t=>{const entrants=t.entrants?.filter(e=>e.members?.some(id=>ids.has(id)))||[];
+    return <article className="tn-card" key={t.id}><span className={`tn-state ${t.status==="completed"?"is-done":""}`}>{t.status}</span><h2>{t.name}</h2><p>{fmtDate(t.start)} – {fmtDate(t.end)}</p><p>{t.venue}</p><small>{entrants.length} participating entries from your assigned batches</small></article>})}
+    {!tournaments.length&&<p>No tournament participation for your assigned players yet.</p>}</div>;
 }

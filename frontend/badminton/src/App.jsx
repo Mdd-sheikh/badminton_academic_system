@@ -23,18 +23,10 @@ import Announcements from './pages/coaches_page/coaches_activity/announcements/A
 import Notifications from './pages/coaches_page/coaches_activity/notifications/Notifications';
 import Settings from './pages/coaches_page/coaches_activity/settings/Settings';
 
-// Parent
-import DashboardP from './pages/parent_pages/dashboard/Parent_Dashboard';
-import ParentHome from './pages/parent_pages/parent_activity/parenthome/ParentHome';
-import ChildPerformance from './pages/parent_pages/parent_activity/childperformance/Performance';
-import ChildActivity from './pages/parent_pages/parent_activity/childactivity/ChildActivity';
-import ChildAttendance from './pages/parent_pages/parent_activity/childattendance/ChildAttendance';
-import ChildSchedule from './pages/parent_pages/parent_activity/childchedule/ChildSchedule';
-import ParentNotifications from './pages/parent_pages/parent_activity/parentnotifications/ParentNotifications';
-import ParentSettings from './pages/parent_pages/parent_activity/parentsettings/ParentsSettings';
+// Parent (currently disabled)
 
-// Player
-import DashboardPl from './pages/players_pages/dashboard/player_Dashboard';
+// Player (currently disabled)
+import DashboardPl from './pages/players_pages/dashboard/Player_Dashboard';
 import PlayerHome from './pages/players_pages/player_activity/playerhome/Playerhome';
 import PlayerPerformance from './pages/players_pages/player_activity/myperformance/MyPerformance';
 import PlayerTraining from './pages/players_pages/player_activity/mytraining/MyTraining';
@@ -45,6 +37,22 @@ import PlayerSchedule from './pages/players_pages/player_activity/myschedule/MyS
 import PlayerTournaments from './pages/players_pages/player_activity/playertournaments/PlayerTournaments';
 import PlayerNotifications from './pages/players_pages/player_activity/playernotifications/PlayerNotifications';
 import PlayerSettings from './pages/players_pages/player_activity/playersettings/PlayerSettings';
+
+// Owner
+import DashboardO from './pages/academy_owner/dashboard/DashboardO';
+import OwnerHome from './pages/academy_owner/owner_activity/OwnerHome/OwnerHome';
+import OPlayers from './pages/academy_owner/owner_activity/OPlayers/OPlayers';
+import OCoaches from './pages/academy_owner/owner_activity/OCoaches/Ocoaches';
+import OTeams from './pages/academy_owner/owner_activity/OTeams/OTeams';
+import OBatches from './pages/academy_owner/owner_activity/OBatches/OBatches';
+import OAttendance from './pages/academy_owner/owner_activity/OAttendance/OAttendance';
+import OPerformance from './pages/academy_owner/owner_activity/OPerformance/OPerformance';
+import OTournaments from './pages/academy_owner/owner_activity/OTournaments/OTournaments';
+import TournamentDetail from './pages/academy_owner/TournamentDetail/TournamentDetail';
+import OSettings from './pages/academy_owner/owner_activity/OSettings/OSettings';
+
+
+// trial 
 
 
 function App() {
@@ -72,7 +80,6 @@ function App() {
 
         {/* Coach area: login required, then the dashboard layout */}
         <Route element={<PrivateRoute allowedRoles={["coach"]} redirectTo="/login" />}>
-          { /*<Route>*/}
           <Route element={<DashboardC />}>
             <Route path="/coach/dashboard" element={<CoachHome />} />
             <Route path="/coach/players" element={<Players />} />
@@ -89,9 +96,27 @@ function App() {
           </Route>
         </Route>
 
-        {/* Parent area: login required, then the parent dashboard layout */}
-        { /*<Route element={<PrivateRoute allowedRoles={["parent"]} redirectTo="/login" />}>*/}
-        {/*<Route>
+        {/* Owner area: guard is commented out for now, same as coach was during development */}
+        <Route element={<PrivateRoute allowedRoles={["owner"]} redirectTo="/login" />}>
+          <Route>
+            <Route element={<DashboardO />}>
+              <Route path="/owner/dashboard" element={<OwnerHome />} />
+              <Route path="/owner/players" element={<OPlayers />} />
+              <Route path="/owner/coaches" element={<OCoaches />} />
+              <Route path="/owner/teams" element={<OTeams />} />
+              <Route path="/owner/batches" element={<OBatches />} />
+              <Route path="/owner/attendance" element={<OAttendance />} />
+              <Route path="/owner/performance" element={<OPerformance />} />
+              <Route path="/owner/tournaments" element={<OTournaments />} />
+              <Route path="/owner/tournaments/:id" element={<TournamentDetail />} />
+              <Route path="/owner/settings" element={<OSettings />} />
+              <Route path="/logout" element={<Logout />} />
+            </Route>
+          </Route>
+        </Route>
+
+        {/* Parent area (disabled)
+        <Route element={<PrivateRoute allowedRoles={["parent"]} redirectTo="/login" />}>
           <Route element={<DashboardP />}>
             <Route path="/parent/dashboard" element={<ParentHome />} />
             <Route path="/parent/performance" element={<ChildPerformance />} />
@@ -101,12 +126,11 @@ function App() {
             <Route path="/parent/notifications" element={<ParentNotifications />} />
             <Route path="/parent/settings" element={<ParentSettings />} />
           </Route>
-        </Route>*/}
+        </Route>
+        */}
 
-        {/* Player area: login required, then the player dashboard layout */}
-        {/* Parent logins are saved as role "player", so they use this area too */}
-        <Route element={<PrivateRoute allowedRoles={["player"]} redirectTo="/login" />}>
-          { /*<Route>*/}
+         Player area (disabled). Parent logins are saved as role "player", so they use this area too
+        <Route element={<PrivateRoute allowedRoles={["parent"]} redirectTo="/login" />}>
           <Route element={<DashboardPl />}>
             <Route path="/player/dashboard" element={<PlayerHome />} />
             <Route path="/player/performance" element={<PlayerPerformance />} />
@@ -121,7 +145,13 @@ function App() {
             <Route path="/logout" element={<Logout />} />
           </Route>
         </Route>
+        
+
+        
+
       </Routes>
+
+
     </>
   )
 }

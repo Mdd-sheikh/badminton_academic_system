@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 // Reuses the coach dashboard styles so colours, layout and theme stay identical
 import "../../coaches_page/dashboard/DashboardC.css";
+import { usePlayerData } from "../../academy_owner/db/playerAccess";
 
 const NAV = [
     { items: [{ to: "/player/dashboard", label: "Home", icon: "M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" }] },
@@ -27,7 +28,7 @@ const NAV = [
         items: [{ to: "/player/settings", label: "Settings", icon: "M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM4 12h2M18 12h2M12 4v2M12 18v2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4" }],
     },
     {
-        items:[{ to:"/logout", label:"Logout", icon:"M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1"}]
+        items: [{ to: "/logout", label: "Logout", icon: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4" }]
     }
 ];
 
@@ -41,7 +42,12 @@ function Icon({ d }) {
     );
 }
 
-export default function Player_Dashboard({ unread = 2, user = { name: "Aarav Sharma", initials: "AS" } }) {
+const initialsOf = (name) => String(name || "?").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+
+export default function DashboardPl() {
+    // Player, notifications and linked children all come from IndexedDB.
+    const { player, children, setActivePlayer, unread } = usePlayerData();
+    const user = { name: player?.name || "Player", initials: initialsOf(player?.name) };
     const [open, setOpen] = useState(false);
     const [theme, setTheme] = useState(() => localStorage.getItem("sp-theme") || "dark");
     const { pathname } = useLocation();
@@ -84,6 +90,17 @@ export default function Player_Dashboard({ unread = 2, user = { name: "Aarav Sha
                     <h1 className="dash-title">{title}</h1>
                     <input className="dash-search" placeholder="Search sessions, matches, drills" aria-label="Search" />
                     <div className="dash-actions">
+                        {children.length > 1 && (
+                            <select
+                                className="dash-search"
+                                style={{ width: "auto", minWidth: 140 }}
+                                value={player?.id || ""}
+                                onChange={(e) => setActivePlayer(e.target.value)}
+                                aria-label="Choose player"
+                            >
+                                {children.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            </select>
+                        )}
                         <button className="dash-icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Switch theme">
                             <Icon d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" />
                         </button>
@@ -96,7 +113,7 @@ export default function Player_Dashboard({ unread = 2, user = { name: "Aarav Sha
                 </header>
 
                 <main className="dash-page">
-                    <Outlet />
+                    <Outlet context={{ playerId: player?.id }} />
                 </main>
             </div>
         </div>

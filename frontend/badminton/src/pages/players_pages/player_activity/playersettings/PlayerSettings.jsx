@@ -1,11 +1,28 @@
 import { useState } from "react";
 import "./PlayerSettings.css";
-export default function PlayerSettings() {
-  const [s, setS] = useState({ name: "Aarav Sharma", email: "", phone: "", sessionReminders: true, matchAlerts: true, coachNotes: true });
+import { usePlayerData } from "../../../academy_owner/db/playerAccess.js";
+import PlayerState from "../../../../cards/share/PlayerState";
+
+function SettingsForm({ d }) {
+  const { player, settings } = d;
+  const [s, setS] = useState({
+    name: player.name || "",
+    email: player.email || "",
+    phone: player.phone || player.parentPhone || "",
+    ...settings,
+  });
   const [saved, setSaved] = useState(false);
   const set = (k, v) => { setSaved(false); setS({ ...s, [k]: v }); };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    await d.saveProfile({ name: s.name, email: s.email, phone: s.phone });
+    await d.saveAlerts({ sessionReminders: s.sessionReminders, matchAlerts: s.matchAlerts, coachNotes: s.coachNotes });
+    setSaved(true);
+  };
+
   return (
-    <form className="pse" onSubmit={(e) => { e.preventDefault(); setSaved(true); }}>
+    <form className="pse" onSubmit={submit}>
       <section><h2>My profile</h2>
         {[["name", "Full name"], ["email", "Email"], ["phone", "Phone"]].map(([k, l]) => (
           <label key={k} className="pse-field"><span>{l}</span><input value={s[k]} onChange={(e) => set(k, e.target.value)} /></label>
@@ -20,4 +37,10 @@ export default function PlayerSettings() {
       {saved && <p role="status" className="pse-ok">Changes saved.</p>}
     </form>
   );
+}
+
+export default function PlayerSettings() {
+  const d = usePlayerData();
+  if (!d.player) return <PlayerState loading={d.loading} />;
+  return <SettingsForm d={d} key={d.player.id} />;
 }

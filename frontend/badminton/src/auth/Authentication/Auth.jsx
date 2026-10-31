@@ -1,16 +1,12 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import {
-    Link,
-    useLocation,
-    useNavigate,
-} from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { z } from "zod";
 import { toast } from "react-toastify";
 import {
-    FiAward,
     FiArrowLeft,
     FiArrowRight,
+    FiAward,
     FiCheck,
     FiCheckCircle,
     FiEye,
@@ -26,51 +22,139 @@ import {
     FiLink,
 } from "react-icons/fi";
 import "./Auth.css";
-// DEMO AUTH: adjust this path to where your ContextProvider file lives
-import {Context} from "../../context/Context";
+
+// IndexedDB layer + seed (adjust these paths to your folder structure)
+import { getAll, save } from "../../pages/academy_owner/db/db.js";
+import { ensureSeed } from "../../pages/academy_owner/db/seed.js";
 
 const API_URL = (
     import.meta.env.VITE_API_URL || "http://localhost:5000/api"
 ).replace(/\/$/, "");
 
-const api = axios.create({
-    baseURL: API_URL,
-    timeout: 15000,
-});
+const api = axios.create({ baseURL: API_URL, timeout: 15000 });
+
+/* -------------------------------------------------------------------------- */
+/*  Constants                                                                 */
+/* -------------------------------------------------------------------------- */
 
 const ROLES = [
-    {
-        value: "player",
-        title: "Player",
-        description: "Training, matches & results",
-        icon: FiAward,
-    },
-    {
-        value: "parent",
-        title: "Parent",
-        description: "Track your child's progress",
-        icon: FiUsers,
-    },
-    {
-        value: "coach",
-        title: "Coach",
-        description: "Manage players & training",
-        icon: FiActivity,
-    },
+    { value: "parent", title: "Parent", description: "Track your child's performance", icon: FiUsers },
+    { value: "coach", title: "Coach", description: "Manage assigned players & training", icon: FiActivity },
+    { value: "admin", title: "Admin", description: "Manage the academy", icon: FiShield },
 ];
 
+// Admin uses the existing Owner dashboard route in App.jsx.
 const DASHBOARDS = {
-    player: "/player/dashboard",
-    parent: "/parent/dashboard",
+    parent: "/player/dashboard",
     coach: "/coach/dashboard",
+    admin: "/owner/dashboard",
 };
 
-const EMPTY_OTP = ["", "", "", "", "", ""];
+// Admin accounts are created by the academy, not through public signup.
+const SIGNUP_ROLES = ROLES.filter((item) => item.value !== "admin");
 
-const emailSchema = z
-    .string()
-    .trim()
-    .email("Please enter a valid email address.");
+const EMPTY_OTP = ["", "", "", "", "", ""];
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_SECONDS = 30;
+
+/* -------------------------------------------------------------------------- */
+/*  IndexedDB helpers (source of truth for login)                             */
+/* -------------------------------------------------------------------------- */
+
+const normEmail = (value) => String(value || "").trim().toLowerCase();
+const onlyDigits = (value) => String(value || "").replace(/\D/g, "");
+
+// Reads a store safely. Returns [] if the store does not exist yet.
+async function readStore(storeName) {
+    try {
+        return (await getAll(storeName)) || [];
+    } catch {
+        return [];
+    }
+}
+
+// Backward compatibility: older accounts may be stored as "player"/"owner".
+function getAccountType(accountRole) {
+    const value = String(accountRole || "").toLowerCase();
+    if (value === "coach") return "coach";
+    if (value === "parent" || value === "player") return "parent";
+    if (value === "admin" || value === "owner") return "admin";
+    return value;
+}
+
+// COACH: created by Admin in the Owner Dashboard ("coaches" store).
+async function findCoachByCredentials(email, password) {
+    await ensureSeed(); // make sure data exists even if Auth is the first page opened
+    const coaches = await readStore("coaches");
+    const coach = coaches.find((item) => normEmail(item.email) === normEmail(email));
+
+    if (!coach) throw new Error("Invalid email or password.");
+    if (!coach.password) throw new Error("Your password has not been set yet. Please contact the admin.");
+    if (coach.password !== password) throw new Error("Invalid email or password.");
+    if (String(coach.status || "").toLowerCase() !== "active") {
+        throw new Error("Your coach account is not active. Please contact the admin.");
+    }
+    return coach;
+}
+
+// ADMIN: stored in the "admins" store, with a fallback to a "meta" record
+// such as { id: "admin", email, password }.
+const DEFAULT_ADMIN = {
+    id: "admin",
+    name: "Academy Admin",
+    email: "admin@smashpoint.in",
+    password: "admin123",
+    role: "admin",
+};
+
+async function findAdminByCredentials(email, password) {
+    await ensureSeed();
+
+    let meta = await readStore("meta");
+    // Self-heal: databases seeded before the admin record existed get it added
+    // here, so coaches and players are kept and no reset is needed.
+    if (!meta.some((item) => item.id === DEFAULT_ADMIN.id)) {
+        await save("meta", DEFAULT_ADMIN);
+        meta = await readStore("meta");
+    }
+    const admins = await readStore("admins");
+
+    const admin = [...admins, ...meta]
+        .map((item) => (item?.value && typeof item.value === "object" ? item.value : item))
+        .find((item) =>
+            item &&
+            item.email &&
+            normEmail(item.email) === normEmail(email) &&
+            item.password === password
+        );
+
+    if (!admin) throw new Error("Invalid email or password.");
+    return admin;
+}
+
+// PARENT: one input only. Accepts the Player ID (e.g. p12) or the parent's
+// registered phone number. A phone number may match several children.
+async function findPlayersByCode(code) {
+    await ensureSeed();
+    const raw = String(code || "").trim().toLowerCase();
+    if (!raw) return [];
+
+    const players = await readStore("players");
+    const phone = onlyDigits(raw);
+
+    return players.filter((player) => {
+        if (String(player.id || "").toLowerCase() === raw) return true;
+        if (player.inviteCode && String(player.inviteCode).toLowerCase() === raw) return true;
+        // phone match: only when the input looks like a phone number
+        return phone.length >= 7 && onlyDigits(player.parentPhone).endsWith(phone.slice(-10));
+    });
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Validation schemas                                                        */
+/* -------------------------------------------------------------------------- */
+
+const emailSchema = z.string().trim().email("Please enter a valid email address.");
 
 const loginSchema = z.object({
     email: emailSchema,
@@ -85,17 +169,9 @@ const passwordSchema = z
 
 const signupSchema = z
     .object({
-        fullName: z
-            .string()
-            .trim()
-            .min(2, "Name must contain at least 2 characters.")
-            .max(100, "Name is too long."),
+        fullName: z.string().trim().min(2, "Name must contain at least 2 characters.").max(100, "Name is too long."),
         email: emailSchema,
-        phone: z
-            .string()
-            .trim()
-            .min(7, "Enter a valid phone number.")
-            .max(20, "Phone number is too long."),
+        phone: z.string().trim().min(7, "Enter a valid phone number.").max(20, "Phone number is too long."),
         password: passwordSchema,
         confirmPassword: z.string(),
         terms: z.boolean().refine(Boolean, "Please accept the terms."),
@@ -120,35 +196,45 @@ const otpSchema = z
     .length(6, "Enter the complete 6-digit code.")
     .regex(/^\d{6}$/, "The code must contain 6 digits.");
 
+/* -------------------------------------------------------------------------- */
+/*  Utilities                                                                 */
+/* -------------------------------------------------------------------------- */
+
+// Message for API (axios) errors and for plain Errors thrown by our own code.
 function getMessage(error, fallback = "Something went wrong. Please try again.") {
     return (
         error?.response?.data?.message ||
         error?.response?.data?.error ||
-        (error?.code === "ECONNABORTED"
-            ? "The request timed out. Please try again."
-            : null) ||
+        (error?.code === "ECONNABORTED" ? "The request timed out. Please try again." : null) ||
         (!error?.response && error?.request
             ? "Cannot connect to the server. Check your connection and API URL."
             : null) ||
+        (!error?.request && error?.message) ||
         fallback
     );
 }
 
 function getPasswordStrength(password) {
     if (!password) return 0;
-
     let score = 0;
     if (password.length >= 8) score++;
     if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
     if (/\d/.test(password)) score++;
     if (/[^A-Za-z0-9]/.test(password)) score++;
-
     return score;
 }
 
+function saveSession(user) {
+    localStorage.setItem("token", "demo-token");
+    localStorage.setItem("user", JSON.stringify(user));
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Small components                                                          */
+/* -------------------------------------------------------------------------- */
+
 function FieldError({ children }) {
     if (!children) return null;
-
     return (
         <span className="auth-field-error" role="alert">
             {children}
@@ -158,7 +244,6 @@ function FieldError({ children }) {
 
 function PasswordStrength({ password }) {
     const score = getPasswordStrength(password);
-
     const labels = ["", "Weak", "Fair", "Good", "Strong"];
 
     return (
@@ -167,15 +252,10 @@ function PasswordStrength({ password }) {
                 {[1, 2, 3, 4].map((level) => (
                     <span
                         key={level}
-                        className={
-                            level <= score
-                                ? `strength-${score <= 1 ? 1 : score <= 2 ? 2 : 3}`
-                                : ""
-                        }
+                        className={level <= score ? `strength-${score <= 1 ? 1 : score <= 2 ? 2 : 3}` : ""}
                     />
                 ))}
             </div>
-
             <small>{labels[score] || "Password strength"}</small>
         </div>
     );
@@ -183,18 +263,9 @@ function PasswordStrength({ password }) {
 
 function PasswordRules({ password }) {
     const rules = [
-        {
-            label: "At least 8 characters",
-            valid: password.length >= 8,
-        },
-        {
-            label: "At least one number",
-            valid: /\d/.test(password),
-        },
-        {
-            label: "At least one symbol",
-            valid: /[^A-Za-z0-9]/.test(password),
-        },
+        { label: "At least 8 characters", valid: password.length >= 8 },
+        { label: "At least one number", valid: /\d/.test(password) },
+        { label: "At least one symbol", valid: /[^A-Za-z0-9]/.test(password) },
     ];
 
     return (
@@ -204,6 +275,27 @@ function PasswordRules({ password }) {
                     {rule.valid ? <FiCheckCircle /> : <FiCheck />}
                     {rule.label}
                 </span>
+            ))}
+        </div>
+    );
+}
+
+function RoleCards({ roles, role, onSelect }) {
+    return (
+        <div className="auth-role-grid">
+            {roles.map(({ value, title, description, icon: Icon }) => (
+                <button
+                    key={value}
+                    type="button"
+                    className={`auth-role-card ${role === value ? "selected" : ""}`}
+                    onClick={() => onSelect(value)}
+                    aria-pressed={role === value}
+                >
+                    <Icon />
+                    <strong>{title}</strong>
+                    <small>{description}</small>
+                    {role === value && <FiCheckCircle className="auth-role-check" />}
+                </button>
             ))}
         </div>
     );
@@ -223,8 +315,8 @@ function AuthAside() {
             </h1>
 
             <p>
-                Your badminton journey, all in one place. Connect with
-                your coach, track your progress, and celebrate every win.
+                Your badminton journey, all in one place. Connect with your coach,
+                track your progress, and celebrate every win.
             </p>
 
             <div className="auth-feature-list">
@@ -235,7 +327,6 @@ function AuthAside() {
                         <small>Monitor your game and improvement.</small>
                     </p>
                 </div>
-
                 <div>
                     <span><FiCalendar /></span>
                     <p>
@@ -243,12 +334,11 @@ function AuthAside() {
                         <small>Keep up with your academy schedule.</small>
                     </p>
                 </div>
-
                 <div>
                     <span><FiUsers /></span>
                     <p>
                         <strong>One connected community</strong>
-                        <small>Players, parents and coaches together.</small>
+                        <small>Parents, coaches and academy administrators together.</small>
                     </p>
                 </div>
             </div>
@@ -263,17 +353,17 @@ function AuthAside() {
     );
 }
 
+/* -------------------------------------------------------------------------- */
+/*  Page                                                                      */
+/* -------------------------------------------------------------------------- */
+
 export default function Auth() {
     const location = useLocation();
     const navigate = useNavigate();
     const otpRefs = useRef([]);
     const redirectTimer = useRef(null);
 
-    // DEMO AUTH: dummy users come from Context
-    const { users } = useContext(Context);
-
-    // FIX: normalise the path (trailing slash / case) and treat /auth as /login,
-    // otherwise any path that is not an exact key shows "Page not found".
+    // Normalise the path (trailing slash / case) and treat /auth as /login.
     const rawPath = location.pathname.replace(/\/+$/, "").toLowerCase() || "/";
     const page = rawPath === "/auth" ? "/login" : rawPath;
 
@@ -284,9 +374,10 @@ export default function Auth() {
     const isReset = page === "/reset-password";
     const isLinkChild = page === "/parent/link-child";
 
-    const [role, setRole] = useState(
-        location.state?.role || "player"
-    );
+    const [role, setRole] = useState(location.state?.role || "parent");
+
+    // Parent login is a single input (player code), so email/password are hidden.
+    const isParentLogin = isLogin && role === "parent";
 
     const [form, setForm] = useState({
         fullName: "",
@@ -297,7 +388,7 @@ export default function Auth() {
         terms: false,
         rememberMe: true,
         inviteCode: "",
-        relationship: "Mother",
+        playerCode: "",
     });
 
     const [otp, setOtp] = useState(EMPTY_OTP);
@@ -308,15 +399,16 @@ export default function Auth() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [resendSeconds, setResendSeconds] = useState(60);
-    const [attemptsRemaining, setAttemptsRemaining] = useState(3);
+    const [attemptsRemaining, setAttemptsRemaining] = useState(MAX_ATTEMPTS);
     const [lockoutSeconds, setLockoutSeconds] = useState(0);
-    const [demoMode, setDemoMode] = useState(false);
     const [childPreview, setChildPreview] = useState(null);
 
-    const email = (
-        location.state?.email ||
-        form.email
-    ).trim().toLowerCase();
+    const email = (location.state?.email || form.email).trim().toLowerCase();
+
+    // Make sure the academy database exists as soon as the auth page opens.
+    useEffect(() => {
+        ensureSeed().catch((err) => console.error("Academy database initialization failed", err));
+    }, []);
 
     // The same <Auth /> instance is reused between /login, /signup, etc.,
     // so reset page-specific state whenever the page changes.
@@ -342,23 +434,13 @@ export default function Auth() {
 
     useEffect(() => {
         if (!isVerify || resendSeconds <= 0) return;
-
-        const timer = window.setTimeout(
-            () => setResendSeconds((seconds) => seconds - 1),
-            1000
-        );
-
+        const timer = window.setTimeout(() => setResendSeconds((seconds) => seconds - 1), 1000);
         return () => window.clearTimeout(timer);
     }, [isVerify, resendSeconds]);
 
     useEffect(() => {
         if (lockoutSeconds <= 0) return;
-
-        const timer = window.setTimeout(
-            () => setLockoutSeconds((seconds) => seconds - 1),
-            1000
-        );
-
+        const timer = window.setTimeout(() => setLockoutSeconds((seconds) => seconds - 1), 1000);
         return () => window.clearTimeout(timer);
     }, [lockoutSeconds]);
 
@@ -367,13 +449,11 @@ export default function Auth() {
 
     const updateField = (name, value) => {
         setForm((previous) => ({ ...previous, [name]: value }));
-
         setErrors((previous) => {
             const next = { ...previous };
             delete next[name];
             return next;
         });
-
         setBanner("");
     };
 
@@ -386,12 +466,10 @@ export default function Auth() {
         }
 
         const nextErrors = {};
-
         result.error.issues.forEach((issue) => {
             const key = issue.path[0];
             if (!nextErrors[key]) nextErrors[key] = issue.message;
         });
-
         setErrors(nextErrors);
         return null;
     };
@@ -402,8 +480,24 @@ export default function Auth() {
         setErrors({});
     };
 
-    // DEMO AUTH: login checks the dummy users from Context (no backend call).
-    // Coach card -> /coach/dashboard. Parent and Player cards -> /player/dashboard.
+    /* ----------------------------- LOGIN ---------------------------------- */
+
+    const registerFailedAttempt = (message) => {
+        const next = attemptsRemaining - 1;
+        if (next <= 0) {
+            setAttemptsRemaining(MAX_ATTEMPTS);
+            setLockoutSeconds(LOCKOUT_SECONDS);
+            setBanner(`Too many attempts. Try again in ${LOCKOUT_SECONDS}s.`);
+        } else {
+            setAttemptsRemaining(next);
+            setBanner(message);
+        }
+    };
+
+    // Login reads everything from IndexedDB:
+    //  - Parent: single player code (player ID or registered parent phone)
+    //  - Coach:  email + password created by Admin ("coaches" store)
+    //  - Admin:  email + password stored in IndexedDB ("admins" store)
     const handleLogin = async (event) => {
         event.preventDefault();
         setBanner("");
@@ -413,79 +507,94 @@ export default function Auth() {
             return;
         }
 
-        const values = validate(loginSchema, {
-            email: form.email,
-            password: form.password,
-        });
+        let user;
 
-        if (!values) return;
-
-        setLoading(true);
-
-        try {
-            const found = users.find(
-                (u) =>
-                    u.email.toLowerCase() === values.email.toLowerCase() &&
-                    u.password === values.password
-            );
-
-            if (!found) {
-                throw new Error("Invalid email or password.");
-            }
-
-            // Parent and player are treated as one group; coach is separate.
-            const selectedCoach = role === "coach";
-            const accountIsCoach = found.role === "coach";
-
-            if (selectedCoach !== accountIsCoach) {
-                setBanner(
-                    `This account is registered as ${found.role}. Choose the correct account type.`
-                );
+        if (role === "parent") {
+            const code = form.playerCode.trim();
+            if (!code) {
+                setErrors({ playerCode: "Enter the player code." });
                 return;
             }
 
-            // Parent is stored as "player" so both open the same dashboard
-            // and pass the same route guard.
-            const user = {
-                name: found.name,
-                email: found.email,
-                role: accountIsCoach ? "coach" : "player",
-                enrollmentCompleted: true,
-                hasLinkedChild: true,
-            };
+            setLoading(true);
+            try {
+                const matches = await findPlayersByCode(code);
+                if (!matches.length) throw new Error("No player found with this code.");
 
-            setAttemptsRemaining(3);
-
-            localStorage.setItem("token", "demo-token");
-            localStorage.setItem("user", JSON.stringify(user));
-
-            toast.success("Welcome back!");
-
-            navigate(
-                accountIsCoach ? "/coach/dashboard" : "/player/dashboard",
-                { replace: true }
-            );
-        } catch (error) {
-            // FIX: no side effects inside a state-updater function
-            // (they run twice in React StrictMode).
-            const next = attemptsRemaining - 1;
-
-            if (next <= 0) {
-                setAttemptsRemaining(3);
-                setLockoutSeconds(30);
-                setBanner("Too many attempts. Try again in 30s.");
-            } else {
-                setAttemptsRemaining(next);
-                setBanner(getMessage(error, "Invalid email or password."));
+                const first = matches[0];
+                user = {
+                    id: `parent-${first.id}`,
+                    name: first.parentName || `Parent of ${first.name || "Player"}`,
+                    phone: first.parentPhone,
+                    role: "parent",
+                    accountType: "parent",
+                    linkedPlayerId: first.id,
+                    linkedPlayerIds: matches.map((player) => player.id),
+                    enrollmentCompleted: true,
+                    hasLinkedChild: true,
+                };
+            } catch (error) {
+                registerFailedAttempt(getMessage(error, "No player found with this code."));
+                setLoading(false);
+                return;
             }
-        } finally {
-            setLoading(false);
+        } else {
+            const values = validate(loginSchema, { email: form.email, password: form.password });
+            if (!values) return;
+
+            setLoading(true);
+            try {
+                if (role === "coach") {
+                    const coach = await findCoachByCredentials(values.email, values.password);
+                    user = {
+                        id: coach.id,
+                        coachId: coach.id, // useCoachData reads this first
+                        name: coach.name,
+                        email: coach.email,
+                        phone: coach.phone,
+                        role: "coach",
+                        accountType: "coach",
+                        enrollmentCompleted: true,
+                        hasLinkedChild: false,
+                    };
+                } else {
+                    const admin = await findAdminByCredentials(values.email, values.password);
+                    user = {
+                        id: admin.id,
+                        name: admin.name || admin.fullName || "Admin",
+                        email: admin.email,
+                        // App.jsx guards the Owner dashboard with role "owner"
+                        role: "owner",
+                        accountType: "admin",
+                        enrollmentCompleted: true,
+                        hasLinkedChild: false,
+                    };
+                }
+            } catch (error) {
+                registerFailedAttempt(getMessage(error, "Invalid email or password."));
+                setLoading(false);
+                return;
+            }
         }
+
+        setAttemptsRemaining(MAX_ATTEMPTS);
+        saveSession(user);
+        toast.success(`Welcome back${user.name ? `, ${user.name.split(" ")[0]}` : ""}!`);
+        navigate(DASHBOARDS[getAccountType(user.accountType)], { replace: true });
+        setLoading(false);
     };
+
+    /* ----------------------------- SIGNUP --------------------------------- */
 
     const handleSignup = async (event) => {
         event.preventDefault();
         setBanner("");
+
+        // Admin accounts are provisioned by the academy; public signup is disabled.
+        if (role === "admin") {
+            setBanner("Admin accounts cannot be created through public signup.");
+            return;
+        }
 
         const values = validate(signupSchema, form);
         if (!values) return;
@@ -502,7 +611,6 @@ export default function Auth() {
             });
 
             toast.success("Account created. Check your email.");
-
             navigate("/verify-email", {
                 replace: true,
                 state: { email: values.email, role },
@@ -514,10 +622,12 @@ export default function Auth() {
         }
     };
 
+    /* ------------------------------ VERIFY -------------------------------- */
+
     const handleVerify = async (event) => {
         event.preventDefault();
 
-        // FIX: the verify page has no email input, so opening it directly
+        // The verify page has no email input, so opening it directly
         // would send an empty email to the server.
         if (!email) {
             setBanner("Email address missing. Please sign up again.");
@@ -536,23 +646,22 @@ export default function Auth() {
         setLoading(true);
 
         try {
-            const { data } = await api.post("/auth/verify-email", {
-                email,
-                otp: code,
-            });
+            const { data } = await api.post("/auth/verify-email", { email, otp: code });
 
             setSuccess(true);
             toast.success("Email verified!");
 
-            const verifiedRole = data.user?.role || role;
+            const verifiedRole = getAccountType(data.user?.role || role);
 
             redirectTimer.current = window.setTimeout(() => {
-                if (verifiedRole === "player") {
-                    navigate("/register", { replace: true });
-                } else if (verifiedRole === "parent") {
+                if (verifiedRole === "parent") {
                     navigate("/parent/link-child", { replace: true });
-                } else {
+                } else if (verifiedRole === "coach") {
                     navigate("/coach/pending-approval", { replace: true });
+                } else if (verifiedRole === "admin") {
+                    navigate(DASHBOARDS.admin, { replace: true });
+                } else {
+                    navigate("/login", { replace: true });
                 }
             }, 900);
         } catch (error) {
@@ -585,11 +694,12 @@ export default function Auth() {
         }
     };
 
+    /* --------------------------- FORGOT / RESET --------------------------- */
+
     const handleForgot = async (event) => {
         event.preventDefault();
 
         const parsedEmail = emailSchema.safeParse(form.email);
-
         if (!parsedEmail.success) {
             setErrors({ email: "Enter a valid email address." });
             return;
@@ -599,10 +709,7 @@ export default function Auth() {
         setBanner("");
 
         try {
-            await api.post("/auth/forgot-password", {
-                email: parsedEmail.data,
-            });
-
+            await api.post("/auth/forgot-password", { email: parsedEmail.data });
             setSuccess(true);
             toast.success("If the account exists, reset instructions are on the way.");
         } catch (error) {
@@ -616,11 +723,9 @@ export default function Auth() {
         event.preventDefault();
 
         const values = validate(resetSchema, form);
-
         if (!values) return;
 
         const token = new URLSearchParams(location.search).get("token");
-
         if (!token) {
             setBanner("Your reset link is missing or invalid. Request a new one.");
             return;
@@ -630,11 +735,7 @@ export default function Auth() {
         setBanner("");
 
         try {
-            await api.post("/auth/reset-password", {
-                token,
-                password: values.password,
-            });
-
+            await api.post("/auth/reset-password", { token, password: values.password });
             setSuccess(true);
             toast.success("Password updated successfully.");
         } catch (error) {
@@ -643,6 +744,8 @@ export default function Auth() {
             setLoading(false);
         }
     };
+
+    /* ----------------------------- LINK CHILD ----------------------------- */
 
     const handleFindChild = async (event) => {
         event.preventDefault();
@@ -660,10 +763,7 @@ export default function Auth() {
         setLoading(true);
 
         try {
-            const { data } = await api.post("/parent/preview-child", {
-                inviteCode: code,
-            });
-
+            const { data } = await api.post("/parent/preview-child", { inviteCode: code });
             setChildPreview(data.child);
         } catch (error) {
             setBanner(getMessage(error, "Invalid or expired invitation code."));
@@ -679,7 +779,6 @@ export default function Auth() {
         try {
             await api.post("/parent/link-child", {
                 inviteCode: form.inviteCode.trim().toUpperCase(),
-                relationship: form.relationship,
             });
 
             // Keep the stored user in sync so the next login/redirect
@@ -687,17 +786,12 @@ export default function Auth() {
             try {
                 const stored = JSON.parse(localStorage.getItem("user") || "null");
                 if (stored) {
-                    localStorage.setItem(
-                        "user",
-                        JSON.stringify({ ...stored, hasLinkedChild: true })
-                    );
+                    localStorage.setItem("user", JSON.stringify({ ...stored, hasLinkedChild: true }));
                 }
             } catch {
                 /* ignore malformed stored user */
             }
 
-            // FIX: previously the success screen never appeared because
-            // `success` was never set to true after linking.
             setSuccess(true);
             toast.success("Child linked successfully.");
         } catch (error) {
@@ -706,6 +800,8 @@ export default function Auth() {
             setLoading(false);
         }
     };
+
+    /* -------------------------------- OTP --------------------------------- */
 
     const handleOtpChange = (index, rawValue) => {
         const digits = rawValue.replace(/\D/g, "");
@@ -717,25 +813,18 @@ export default function Auth() {
             return;
         }
 
-        // FIX: typing over a filled box used to overwrite from the first box.
         // Keep only the last typed digit for this box.
         const next = [...otp];
         next[index] = digits.slice(-1);
         setOtp(next);
 
-        if (digits && index < 5) {
-            otpRefs.current[index + 1]?.focus();
-        }
+        if (digits && index < 5) otpRefs.current[index + 1]?.focus();
     };
 
     const handleOtpPaste = (event) => {
         event.preventDefault();
 
-        const digits = event.clipboardData
-            .getData("text")
-            .replace(/\D/g, "")
-            .slice(0, 6);
-
+        const digits = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
         if (!digits) return;
 
         const next = [...EMPTY_OTP];
@@ -748,50 +837,12 @@ export default function Auth() {
     };
 
     const handleOtpKeyDown = (index, event) => {
-        if (event.key === "Backspace" && !otp[index] && index > 0) {
-            otpRefs.current[index - 1]?.focus();
-        }
-
-        if (event.key === "ArrowLeft" && index > 0) {
-            otpRefs.current[index - 1]?.focus();
-        }
-
-        if (event.key === "ArrowRight" && index < 5) {
-            otpRefs.current[index + 1]?.focus();
-        }
+        if (event.key === "Backspace" && !otp[index] && index > 0) otpRefs.current[index - 1]?.focus();
+        if (event.key === "ArrowLeft" && index > 0) otpRefs.current[index - 1]?.focus();
+        if (event.key === "ArrowRight" && index < 5) otpRefs.current[index + 1]?.focus();
     };
 
-    // DEMO AUTH: fills credentials that match the dummy users in Context
-    const fillDemo = () => {
-        const demos = {
-            player: {
-                email: "shubham@example.com",
-                password: "shubham",
-            },
-            parent: {
-                email: "sahil@example.com",
-                password: "sahil",
-            },
-            coach: {
-                email: "aadil@example.com",
-                password: "aadil",
-            },
-        };
-
-        const demo = demos[role];
-
-        setForm((previous) => ({
-            ...previous,
-            email: demo.email,
-            password: demo.password,
-        }));
-
-        setDemoMode(true);
-        setErrors({});
-        setBanner(
-            "Demo credentials filled. Click Sign in to continue."
-        );
-    };
+    /* ------------------------------ RENDER -------------------------------- */
 
     const handleSubmit = (event) => {
         if (isLogin) return handleLogin(event);
@@ -804,7 +855,7 @@ export default function Auth() {
 
     const heading = {
         "/login": ["Welcome back", "Sign in to continue your journey."],
-        "/signup": ["Create your account", "Choose your role and join the academy."],
+        "/signup": ["Create your account", "Choose Parent or Coach to join the academy."],
         "/verify-email": ["Verify your email", "Enter the six-digit code we sent you."],
         "/forgot-password": ["Forgot password?", "We'll help you securely reset it."],
         "/reset-password": ["Set a new password", "Choose a strong password for your account."],
@@ -825,7 +876,6 @@ export default function Auth() {
             <div className="auth-decoration auth-decoration-one" />
             <div className="auth-decoration auth-decoration-two" />
 
-
             <div className="auth-layout-grid">
                 <AuthAside />
 
@@ -834,7 +884,6 @@ export default function Auth() {
                         <span className="auth-heading-icon">
                             {isSignup ? <FiUser /> : isVerify ? <FiMail /> : isLinkChild ? <FiUsers /> : <FiLock />}
                         </span>
-
                         <h2>{heading[0]}</h2>
                         <p>{heading[1]}</p>
                     </div>
@@ -849,46 +898,14 @@ export default function Auth() {
                     {isLogin && (
                         <>
                             <span className="auth-section-label">SIGN IN AS</span>
-
-                            <div className="auth-role-grid">
-                                {ROLES.map(({ value, title, description, icon: Icon }) => (
-                                    <button
-                                        key={value}
-                                        type="button"
-                                        className={`auth-role-card ${role === value ? "selected" : ""}`}
-                                        onClick={() => selectRole(value)}
-                                        aria-pressed={role === value}
-                                    >
-                                        <Icon />
-                                        <strong>{title}</strong>
-                                        <small>{description}</small>
-                                        {role === value && <FiCheckCircle className="auth-role-check" />}
-                                    </button>
-                                ))}
-                            </div>
+                            <RoleCards roles={ROLES} role={role} onSelect={selectRole} />
                         </>
                     )}
 
                     {isSignup && (
                         <>
                             <span className="auth-section-label">CHOOSE YOUR ACCOUNT</span>
-
-                            <div className="auth-role-grid">
-                                {ROLES.map(({ value, title, description, icon: Icon }) => (
-                                    <button
-                                        key={value}
-                                        type="button"
-                                        className={`auth-role-card ${role === value ? "selected" : ""}`}
-                                        onClick={() => selectRole(value)}
-                                        aria-pressed={role === value}
-                                    >
-                                        <Icon />
-                                        <strong>{title}</strong>
-                                        <small>{description}</small>
-                                        {role === value && <FiCheckCircle className="auth-role-check" />}
-                                    </button>
-                                ))}
-                            </div>
+                            <RoleCards roles={SIGNUP_ROLES} role={role} onSelect={selectRole} />
                         </>
                     )}
 
@@ -915,11 +932,7 @@ export default function Auth() {
                             </p>
 
                             {isForgot && (
-                                <button
-                                    type="button"
-                                    className="auth-secondary-btn"
-                                    onClick={() => setSuccess(false)}
-                                >
+                                <button type="button" className="auth-secondary-btn" onClick={() => setSuccess(false)}>
                                     <FiRefreshCw /> Send another request
                                 </button>
                             )}
@@ -932,10 +945,7 @@ export default function Auth() {
 
                             {isLinkChild && (
                                 <>
-                                    <Link
-                                        className="auth-submit auth-submit-link"
-                                        to={DASHBOARDS.parent}
-                                    >
+                                    <Link className="auth-submit auth-submit-link" to={DASHBOARDS.parent}>
                                         Go to dashboard <FiArrowRight />
                                     </Link>
 
@@ -965,35 +975,12 @@ export default function Auth() {
                                 <FiCheckCircle />
                             </div>
 
-                            <div className="auth-field">
-                                <label htmlFor="relationship">Your relationship</label>
-                                <select
-                                    id="relationship"
-                                    value={form.relationship}
-                                    onChange={(event) => updateField("relationship", event.target.value)}
-                                >
-                                    <option>Mother</option>
-                                    <option>Father</option>
-                                    <option>Guardian</option>
-                                    <option>Other</option>
-                                </select>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="auth-submit"
-                                disabled={loading}
-                                onClick={handleLinkChild}
-                            >
+                            <button type="button" className="auth-submit" disabled={loading} onClick={handleLinkChild}>
                                 {loading ? "Linking..." : "Yes, this is my child"}
                                 <FiCheckCircle />
                             </button>
 
-                            <button
-                                type="button"
-                                className="auth-back-link"
-                                onClick={() => setChildPreview(null)}
-                            >
+                            <button type="button" className="auth-back-link" onClick={() => setChildPreview(null)}>
                                 <FiArrowLeft /> Use another invitation code
                             </button>
                         </div>
@@ -1035,7 +1022,27 @@ export default function Auth() {
                                 </>
                             )}
 
-                            {(isLogin || isSignup || isForgot) && (
+                            {/* Parent login: ONE input only */}
+                            {isParentLogin && (
+                                <div className="auth-field">
+                                    <label htmlFor="playerCode">Player code</label>
+                                    <div className={`auth-input-wrap ${errors.playerCode ? "has-error" : ""}`}>
+                                        <FiLink className="auth-input-icon" />
+                                        <input
+                                            id="playerCode"
+                                            placeholder="Player ID or registered phone number"
+                                            autoComplete="off"
+                                            value={form.playerCode}
+                                            onChange={(e) => updateField("playerCode", e.target.value)}
+                                            aria-invalid={Boolean(errors.playerCode)}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <FieldError>{errors.playerCode}</FieldError>
+                                </div>
+                            )}
+
+                            {(isSignup || isForgot || (isLogin && !isParentLogin)) && (
                                 <div className="auth-field">
                                     <label htmlFor="email">Email address</label>
                                     <div className={`auth-input-wrap ${errors.email ? "has-error" : ""}`}>
@@ -1055,11 +1062,9 @@ export default function Auth() {
                                 </div>
                             )}
 
-                            {(isLogin || isSignup || isReset) && (
+                            {(isSignup || isReset || (isLogin && !isParentLogin)) && (
                                 <div className="auth-field">
-                                    <label htmlFor="password">
-                                        {isReset ? "New password" : "Password"}
-                                    </label>
+                                    <label htmlFor="password">{isReset ? "New password" : "Password"}</label>
 
                                     <div className={`auth-input-wrap ${errors.password ? "has-error" : ""}`}>
                                         <FiLock className="auth-input-icon" />
@@ -1122,7 +1127,7 @@ export default function Auth() {
                                 </div>
                             )}
 
-                            {isLogin && (
+                            {isLogin && !isParentLogin && (
                                 <div className="auth-form-options">
                                     <label className="auth-check">
                                         <input
@@ -1191,7 +1196,7 @@ export default function Auth() {
 
                             {isLinkChild && (
                                 <div className="auth-field">
-                                    <label htmlFor="inviteCode">Child's invitation code</label>
+                                    <label htmlFor="inviteCode">Player invitation code</label>
                                     <div className={`auth-input-wrap ${errors.inviteCode ? "has-error" : ""}`}>
                                         <FiLink className="auth-input-icon" />
                                         <input
@@ -1199,14 +1204,12 @@ export default function Auth() {
                                             placeholder="ABC-1234"
                                             autoCapitalize="characters"
                                             value={form.inviteCode}
-                                            onChange={(e) =>
-                                                updateField("inviteCode", e.target.value.toUpperCase())
-                                            }
+                                            onChange={(e) => updateField("inviteCode", e.target.value.toUpperCase())}
                                         />
                                     </div>
                                     <FieldError>{errors.inviteCode}</FieldError>
                                     <p className="auth-note">
-                                        Ask your academy or child for their invitation code.
+                                        Enter the invitation code provided by the academy to link the player and view performance.
                                     </p>
                                 </div>
                             )}
@@ -1214,15 +1217,15 @@ export default function Auth() {
                             {isSignup && (
                                 <p className="auth-note">
                                     <FiShield />
-                                    Coach accounts may require admin approval. Admin accounts
-                                    cannot be created through public signup.
+                                    Coach accounts may require admin approval. Admin accounts cannot be created
+                                    through public signup.
                                 </p>
                             )}
 
-                            {isLogin && role === "parent" && (
+                            {isParentLogin && (
                                 <p className="auth-note">
                                     <FiUsers />
-                                    Link your child after login to see attendance, match results
+                                    Enter the player code given by the academy to see attendance, match results
                                     and coach feedback.
                                 </p>
                             )}
@@ -1230,8 +1233,14 @@ export default function Auth() {
                             {isLogin && role === "coach" && (
                                 <p className="auth-note">
                                     <FiShield />
-                                    Coach dashboard access may be restricted until your account
-                                    is approved.
+                                    Sign in with the email and password your academy admin created for you.
+                                </p>
+                            )}
+
+                            {isLogin && role === "admin" && (
+                                <p className="auth-note">
+                                    <FiShield />
+                                    Admin accounts are provided by the academy.
                                 </p>
                             )}
 
@@ -1254,20 +1263,6 @@ export default function Auth() {
                                     </>
                                 )}
                             </button>
-
-                            {isLogin && (
-                                <div className="auth-demo">
-                                    <span className="auth-demo-title">TEST ACCOUNT FORM</span>
-                                    <div className="auth-demo-chips">
-                                        <button type="button" onClick={fillDemo}>Fill {role} demo</button>
-                                    </div>
-                                    {demoMode && (
-                                        <small>
-                                            Demo credentials are filled from the built-in demo users.
-                                        </small>
-                                    )}
-                                </div>
-                            )}
                         </form>
                     )}
 
@@ -1287,7 +1282,6 @@ export default function Auth() {
                     )}
                 </section>
             </div>
-
         </main>
     );
 }

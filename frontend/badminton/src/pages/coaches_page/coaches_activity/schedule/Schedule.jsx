@@ -1,24 +1,11 @@
-import "./schedule.css";
-const WEEK = {
-    Monday: [["6:00 AM", "Junior batch", "Court 1"], ["6:30 PM", "Elite batch", "Court 2"]],
-    Tuesday: [["4:30 PM", "Senior batch", "Court 1"]],
-    Wednesday: [["6:00 AM", "Junior batch", "Court 1"], ["6:30 PM", "Elite batch", "Court 2"]],
-    Thursday: [["4:30 PM", "Senior batch", "Court 1"]],
-    Friday: [["6:00 AM", "Junior batch", "Court 1"], ["6:30 PM", "Elite batch", "Court 2"]],
-    Saturday: [["8:00 AM", "Weekend batch", "Court 1"], ["4:30 PM", "Senior batch", "Court 2"]],
-    Sunday: [],
-};
+
+import "./Schedule.css";
+import { useCoachData } from "../../../academy_owner/db/coachAccess";
 export default function Schedule() {
-    return (
-        <div className="sc">
-            {Object.entries(WEEK).map(([day, list]) => (
-                <section className="sc-day" key={day}>
-                    <h2>{day}</h2>
-                    {list.length ? list.map(([t, b, c]) => (
-                        <div className="sc-slot" key={t + b}><b>{t}</b><span>{b}</span><em>{c}</em></div>
-                    )) : <p>Rest day. No sessions planned.</p>}
-                </section>
-            ))}
-        </div>
-    );
+  const {coach,batches,players,loading}=useCoachData();
+  if(loading)return <div className="sc">Loading your schedule…</div>;
+  if(!coach)return <div className="sc">Coach account is not linked.</div>;
+  const week=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  return <div className="sc">{week.map(day=>{const short=day.slice(0,3);const list=batches.filter(b=>b.days?.includes(short)).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+    return <section className="sc-day" key={day}><h2>{day}</h2>{list.length?list.map(b=><div className="sc-slot" key={b.id}><b>{b.time}</b><span>{b.name}</span><em>Court {b.court||"—"} · {players.filter(p=>p.batchId===b.id&&p.status==="Active").length} players</em></div>):<p>No assigned session.</p>}</section>})}</div>;
 }

@@ -1,0 +1,37 @@
+.pst {
+    --c-card: var(--card, #171c28);
+    --c-line: var(--line, #2a3142);
+    --c-text: var(--text, #e8ecf3);
+    --c-mute: var(--muted, #8b95a9);
+    --c-acc: var(--accent, #3ddc97);
+    max-width: 520px;
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: 12px;
+    padding: 22px;
+    color: var(--c-text);
+    display: grid;
+    gap: 8px
+}
+
+.pst h2 {
+    margin: 0;
+    font-size: 18px
+}
+
+.pst p {
+    margin: 0;
+    color: var(--c-mute);
+    font-size: 14px
+}
+
+.pst a {
+    justify-self: start;
+    margin-top: 6px;
+    background: var(--c-acc);
+    color: #06130d;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    text-decoration: none
+}
