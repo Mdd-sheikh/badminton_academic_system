@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useStore, save, todayISO, METRICS, avgOf } from "../../db/db.js";
-import { Empty, Tag } from "../../ui/Ui.jsx";
+import { Empty, Tag } from "../../Ui/Ui.jsx";
 
 export default function OPerformance() {
   const [players] = useStore("players"), [perf] = useStore("performance"), [batches] = useStore("batches");
